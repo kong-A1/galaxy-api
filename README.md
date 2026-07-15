@@ -1,2 +1,2 @@
-# galaxy-api
-Loyalty Platform API
+# Galaxy API
+Loyalty Platform API Repository
