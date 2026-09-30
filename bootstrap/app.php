@@ -6,6 +6,8 @@ use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Http\Request;
 use App\Exceptions\EmailAlreadyExistsException;
 use Illuminate\Validation\ValidationException;
+use App\Exceptions\AccountInactiveException;
+use App\Exceptions\InvalidCredentialsException;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -15,7 +17,7 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        //
+        $middleware->statefulApi();
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->render(
@@ -30,6 +32,44 @@ return Application::configure(basePath: dirname(__DIR__))
                         'details' => (object) [],
                     ],
                 ], 409);
+            }
+        );
+
+        $exceptions->render(
+            function (
+                InvalidCredentialsException $e,
+                Request $request,
+            ) {
+                if (! $request->is('api/*')) {
+                    return null;
+                }
+
+                return response()->json([
+                    'error' => [
+                        'code' => 'UNAUTHENTICATED',
+                        'message' => 'The provided credentials are incorrect.',
+                        'details' => (object) [],
+                    ],
+                ], 401);
+            }
+        );
+
+        $exceptions->render(
+            function (
+                AccountInactiveException $e,
+                Request $request,
+            ) {
+                if (! $request->is('api/*')) {
+                    return null;
+                }
+
+                return response()->json([
+                    'error' => [
+                        'code' => 'ACCOUNT_INACTIVE',
+                        'message' => 'The account is inactive.',
+                        'details' => (object) [],
+                    ],
+                ], 403);
             }
         );
 

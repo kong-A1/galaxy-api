@@ -23,10 +23,25 @@ class CreateUserRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => ['required', 'string'],
-            'email' => ['required', 'email'],
-            'password' => ['required', 'string', 'min:8'],
-            'created_by' => ['nullable', 'uuid', 'exists:users,id'],
+            'name' => 'required|string',
+            'email' => 'required|email',
+            'password' => 'required|string|min:8',
+            'created_by' => 'nullable|uuid|exists:users,id',
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'name.required' => 'Name is required',
+            'name.string' => 'Name must be a string',
+            'email.required' => 'Email is required',
+            'email.email' => 'Email is invalid',
+            'password.required' => 'Password is required',
+            'password.string' => 'Password must be a string',
+            'password.min' => 'Password must be at least 8 characters long',
+            'created_by.uuid' => 'Created by must be a UUID',
+            'created_by.exists' => 'Created by must exist in users table',
         ];
     }
 }

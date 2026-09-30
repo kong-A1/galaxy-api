@@ -65,7 +65,7 @@ use OpenApi\Attributes as OA;
                 'message' => 'The given data is invalid.',
                 'details' => [
                     'email' => [
-                        'The email field is required.',
+                        'Email is required.',
                     ],
                 ],
             ],

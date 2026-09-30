@@ -6,6 +6,7 @@ use App\Models\User;
 use App\Queries\CMS\UserQuery;
 use Illuminate\Support\Facades\Auth;
 use App\Exceptions\EmailAlreadyExistsException;
+use Illuminate\Database\QueryException;
 
 class UserService
 {
@@ -20,6 +21,20 @@ class UserService
         $data['status'] = 'active';
         $data['created_by'] = Auth::id();
 
-        return $this->userQuery->create($data);
+        try {
+            return $this->userQuery->create($data);
+        } catch (QueryException $e) {
+            if (
+                (string) $e->getCode() === '23505'
+                && str_contains(
+                    $e->getMessage(),
+                    'users_email_unique',
+                )
+            ) {
+                throw new EmailAlreadyExistsException();
+            }
+
+            throw $e;
+        }
     }
 }
