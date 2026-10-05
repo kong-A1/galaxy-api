@@ -13,6 +13,6 @@ Route::prefix('auth')->group(function () {
     });
 });
 
-Route::prefix('user')->group(function () {
+Route::prefix('user')->middleware('auth:sanctum')->group(function () {
     Route::post('/create', [UserController::class, 'create']);
 });

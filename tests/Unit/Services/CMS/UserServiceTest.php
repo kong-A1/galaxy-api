@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature\tests\Unit\Services\CMS;
+namespace Tests\Unit\Services\CMS;
 
 use App\Exceptions\EmailAlreadyExistsException;
 use App\Queries\CMS\UserQuery;
