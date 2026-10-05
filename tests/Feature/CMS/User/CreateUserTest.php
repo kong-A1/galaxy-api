@@ -9,9 +9,7 @@ use Tests\TestCase;
 class CreateUserTest extends TestCase
 {
     use RefreshDatabase;
-    /**
-     * Test create user successfully
-     */
+
     public function test_it_creates_user_successfully(): void
     {
         $payload = [
@@ -42,9 +40,6 @@ class CreateUserTest extends TestCase
         ]);
     }
 
-    /**
-     * Test create user failed when email is missing
-     */
     public function test_it_returns_validation_error_when_email_is_missing(): void
     {
         $payload = [
@@ -65,7 +60,7 @@ class CreateUserTest extends TestCase
                     'message' => 'The given data is invalid.',
                     'details' => [
                         'email' => [
-                            'The email field is required.',
+                            'Email is required',
                         ],
                     ],
                 ],
@@ -74,9 +69,6 @@ class CreateUserTest extends TestCase
         $this->assertDatabaseCount('users', 0);
     }
 
-    /**
-     * Test create user failed when email already exists
-     */
     public function test_it_returns_conflict_when_email_already_exists(): void
     {
         User::factory()->create([

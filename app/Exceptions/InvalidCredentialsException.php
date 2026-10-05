@@ -2,12 +2,12 @@
 
 namespace App\Exceptions;
 
-use RuntimeException;
+use Illuminate\Auth\AuthenticationException;
 
-class InvalidCredentialsException extends RuntimeException
+class InvalidCredentialsException extends AuthenticationException
 {
     public function __construct()
     {
-        parent::__construct('INVALID_CREDENTIALS');
+        parent::__construct('The provided credentials are incorrect.');
     }
 }

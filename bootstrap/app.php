@@ -1,13 +1,14 @@
 <?php
 
+use App\Exceptions\AccountInactiveException;
+use App\Exceptions\EmailAlreadyExistsException;
+use Illuminate\Auth\AuthenticationException;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Http\Request;
-use App\Exceptions\EmailAlreadyExistsException;
 use Illuminate\Validation\ValidationException;
-use App\Exceptions\AccountInactiveException;
-use App\Exceptions\InvalidCredentialsException;
+use Throwable;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -18,26 +19,21 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->statefulApi();
+
+        // API-only application: do not redirect unauthenticated users.
+        $middleware->redirectGuestsTo(null);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        $exceptions->render(
-            function (
-                EmailAlreadyExistsException $e,
-                Request $request,
-            ) {
-                return response()->json([
-                    'error' => [
-                        'code' => 'EMAIL_ALREADY_EXISTS',
-                        'message' => 'The email has already been taken.',
-                        'details' => (object) [],
-                    ],
-                ], 409);
-            }
-        );
+        $exceptions->shouldRenderJsonWhen(function (
+            Request $request,
+            Throwable $e,
+        ) {
+            return $request->is('api/*') || $request->expectsJson();
+        });
 
         $exceptions->render(
             function (
-                InvalidCredentialsException $e,
+                AuthenticationException $e,
                 Request $request,
             ) {
                 if (! $request->is('api/*')) {
@@ -47,7 +43,7 @@ return Application::configure(basePath: dirname(__DIR__))
                 return response()->json([
                     'error' => [
                         'code' => 'UNAUTHENTICATED',
-                        'message' => 'The provided credentials are incorrect.',
+                        'message' => $e->getMessage(),
                         'details' => (object) [],
                     ],
                 ], 401);
@@ -75,6 +71,21 @@ return Application::configure(basePath: dirname(__DIR__))
 
         $exceptions->render(
             function (
+                EmailAlreadyExistsException $e,
+                Request $request,
+            ) {
+                return response()->json([
+                    'error' => [
+                        'code' => 'EMAIL_ALREADY_EXISTS',
+                        'message' => 'The email has already been taken.',
+                        'details' => (object) [],
+                    ],
+                ], 409);
+            }
+        );
+
+        $exceptions->render(
+            function (
                 ValidationException $e,
                 Request $request,
             ) {
@@ -91,4 +102,5 @@ return Application::configure(basePath: dirname(__DIR__))
                 ], 422);
             }
         );
-    })->create();
+    })
+    ->create();

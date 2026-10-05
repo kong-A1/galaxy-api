@@ -12,6 +12,261 @@
         }
     ],
     "paths": {
+        "/api/cms/auth/login": {
+            "post": {
+                "tags": [
+                    "CMS Auth"
+                ],
+                "summary": "Login to CMS",
+                "description": "Authenticate a CMS user using email and password.",
+                "operationId": "8972f194b040f9b5cc43a6296c42a826",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/x-www-form-urlencoded": {
+                            "schema": {
+                                "required": [
+                                    "email",
+                                    "password"
+                                ],
+                                "properties": {
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "john.doe@example.com"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "example": "password123"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        },
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "email",
+                                    "password"
+                                ],
+                                "properties": {
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "john.doe@example.com"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "example": "password123"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Login successful.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/User"
+                                        }
+                                    },
+                                    "type": "object"
+                                },
+                                "example": {
+                                    "data": {
+                                        "id": "550e8400-e29b-41d4-a716-446655440000",
+                                        "name": "John Doe",
+                                        "email": "john.doe@example.com",
+                                        "status": "active"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Invalid credentials.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "$ref": "#/components/schemas/Error"
+                                        }
+                                    },
+                                    "type": "object"
+                                },
+                                "example": {
+                                    "error": {
+                                        "code": "UNAUTHENTICATED",
+                                        "message": "The provided credentials are incorrect.",
+                                        "details": {}
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Account is inactive.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "$ref": "#/components/schemas/Error"
+                                        }
+                                    },
+                                    "type": "object"
+                                },
+                                "example": {
+                                    "error": {
+                                        "code": "ACCOUNT_INACTIVE",
+                                        "message": "The account is inactive.",
+                                        "details": {}
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "$ref": "#/components/schemas/Error"
+                                        }
+                                    },
+                                    "type": "object"
+                                },
+                                "example": {
+                                    "error": {
+                                        "code": "VALIDATION_ERROR",
+                                        "message": "The given data is invalid.",
+                                        "details": {
+                                            "email": [
+                                                "The email field is required."
+                                            ]
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/cms/auth/me": {
+            "get": {
+                "tags": [
+                    "CMS Auth"
+                ],
+                "summary": "Get authenticated user",
+                "description": "Return the currently authenticated CMS user.",
+                "operationId": "b8b71b8e06fd4e0505d1c6376742ab3e",
+                "responses": {
+                    "200": {
+                        "description": "Authenticated user.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/User"
+                                        }
+                                    },
+                                    "type": "object"
+                                },
+                                "example": {
+                                    "data": {
+                                        "id": "550e8400-e29b-41d4-a716-446655440000",
+                                        "name": "John Doe",
+                                        "email": "john.doe@example.com",
+                                        "status": "active"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "$ref": "#/components/schemas/Error"
+                                        }
+                                    },
+                                    "type": "object"
+                                },
+                                "example": {
+                                    "error": {
+                                        "code": "UNAUTHENTICATED",
+                                        "message": "Unauthenticated.",
+                                        "details": {}
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/cms/auth/logout": {
+            "post": {
+                "tags": [
+                    "CMS Auth"
+                ],
+                "summary": "Logout from CMS",
+                "description": "Logout the currently authenticated CMS user.",
+                "operationId": "ee0f98fe0749e755bce0e9a4bef14066",
+                "responses": {
+                    "204": {
+                        "description": "Logout successful.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {}
+                                    },
+                                    "type": "object"
+                                },
+                                "example": null
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "$ref": "#/components/schemas/Error"
+                                        }
+                                    },
+                                    "type": "object"
+                                },
+                                "example": {
+                                    "error": {
+                                        "code": "UNAUTHENTICATED",
+                                        "message": "Unauthenticated.",
+                                        "details": {}
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/cms/user/create": {
             "post": {
                 "tags": [
@@ -215,6 +470,10 @@
         }
     },
     "tags": [
+        {
+            "name": "CMS Auth",
+            "description": "CMS Auth"
+        },
         {
             "name": "CMS Users",
             "description": "CMS Users"
