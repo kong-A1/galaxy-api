@@ -20,7 +20,7 @@ class UserQueryTest extends TestCase
             'email' => 'john.doe@example.com',
         ]);
 
-        $query = new UserQuery();
+        $query = new UserQuery;
 
         $result = $query->findByEmail('john.doe@example.com');
 
@@ -33,7 +33,7 @@ class UserQueryTest extends TestCase
      */
     public function test_it_returns_null_when_email_does_not_exist(): void
     {
-        $query = new UserQuery();
+        $query = new UserQuery;
 
         $result = $query->findByEmail('not-found@example.com');
 

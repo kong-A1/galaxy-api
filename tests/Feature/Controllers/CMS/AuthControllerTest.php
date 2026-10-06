@@ -57,7 +57,7 @@ class AuthControllerTest extends TestCase
             ->shouldReceive('login')
             ->once()
             ->with('john.doe@example.com', 'wrong-password')
-            ->andThrow(new InvalidCredentialsException());
+            ->andThrow(new InvalidCredentialsException);
 
         $this->app->instance(AuthService::class, $authService);
 
@@ -85,7 +85,7 @@ class AuthControllerTest extends TestCase
             ->shouldReceive('login')
             ->once()
             ->with('john.doe@example.com', 'password123')
-            ->andThrow(new AccountInactiveException());
+            ->andThrow(new AccountInactiveException);
 
         $this->app->instance(AuthService::class, $authService);
 
@@ -120,7 +120,7 @@ class AuthControllerTest extends TestCase
             ])
             ->assertJsonPath(
                 'error.details.email',
-                fn($errors) => is_array($errors) && count($errors) > 0,
+                fn ($errors) => is_array($errors) && count($errors) > 0,
             );
     }
 }

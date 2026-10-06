@@ -18,15 +18,15 @@ class AuthService
         $user = $this->userQuery->findByEmail($email);
 
         if ($user === null) {
-            throw new InvalidCredentialsException();
+            throw new InvalidCredentialsException;
         }
 
         if (! Hash::check($password, $user->password)) {
-            throw new InvalidCredentialsException();
+            throw new InvalidCredentialsException;
         }
 
         if ($user->status !== 'active') {
-            throw new AccountInactiveException();
+            throw new AccountInactiveException;
         }
 
         Auth::login($user);

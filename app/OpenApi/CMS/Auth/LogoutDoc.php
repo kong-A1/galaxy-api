@@ -2,9 +2,8 @@
 
 namespace App\OpenApi\CMS\Auth;
 
-use App\Support\ApiError;
-use App\OpenApi\Helpers\ApiRequest;
 use App\OpenApi\Helpers\ApiResponse;
+use App\Support\ApiError;
 use OpenApi\Attributes as OA;
 
 #[OA\Post(
@@ -22,7 +21,7 @@ use OpenApi\Attributes as OA;
         new ApiResponse(
             code: 401,
             description: 'Unauthenticated.',
-            schema: '#/components/schemas/Error',
+            schema: '#/components/Error',
             error: true,
             example: [
                 'code' => ApiError::UNAUTHENTICATED['code'],

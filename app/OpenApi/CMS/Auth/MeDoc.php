@@ -2,8 +2,8 @@
 
 namespace App\OpenApi\CMS\Auth;
 
-use App\Support\ApiError;
 use App\OpenApi\Helpers\ApiResponse;
+use App\Support\ApiError;
 use OpenApi\Attributes as OA;
 
 #[OA\Get(
@@ -16,7 +16,7 @@ use OpenApi\Attributes as OA;
         new ApiResponse(
             code: 200,
             description: 'Authenticated user.',
-            schema: '#/components/schemas/User',
+            schema: '#/components/schemas/UserSchemasDoc',
             example: [
                 'id' => '550e8400-e29b-41d4-a716-446655440000',
                 'name' => 'John Doe',
@@ -28,7 +28,7 @@ use OpenApi\Attributes as OA;
         new ApiResponse(
             code: 401,
             description: 'Unauthenticated.',
-            schema: '#/components/schemas/Error',
+            schema: '#/components/Error',
             error: true,
             example: [
                 'code' => ApiError::UNAUTHENTICATED['code'],

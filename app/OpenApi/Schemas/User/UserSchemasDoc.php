@@ -5,7 +5,7 @@ namespace App\OpenApi\Schemas;
 use OpenApi\Attributes as OA;
 
 #[OA\Schema(
-    schema: 'User',
+    schema: 'UserSchemasDoc',
     type: 'object',
     required: [
         'id',
@@ -41,4 +41,4 @@ use OpenApi\Attributes as OA;
         ),
     ],
 )]
-class UserSchemas {}
+class UserSchemasDoc {}

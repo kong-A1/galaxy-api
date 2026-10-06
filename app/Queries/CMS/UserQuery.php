@@ -8,9 +8,6 @@ class UserQuery
 {
     /**
      * Check if a user exists by email.
-     *
-     * @param string $email
-     * @return bool
      */
     public function existsByEmail(string $email): bool
     {
@@ -21,9 +18,6 @@ class UserQuery
 
     /**
      * Find a user by email.
-     *
-     * @param string $email
-     * @return User|null
      */
     public function findByEmail(string $email): ?User
     {
@@ -34,9 +28,6 @@ class UserQuery
 
     /**
      * Create a new user.
-     *
-     * @param array $data
-     * @return User
      */
     public function create(array $data): User
     {

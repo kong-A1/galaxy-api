@@ -2,9 +2,9 @@
 
 namespace App\OpenApi\CMS\User;
 
-use App\Support\ApiError;
 use App\OpenApi\Helpers\ApiRequest;
 use App\OpenApi\Helpers\ApiResponse;
+use App\Support\ApiError;
 use OpenApi\Attributes as OA;
 
 #[OA\Post(
@@ -47,7 +47,7 @@ use OpenApi\Attributes as OA;
         new ApiResponse(
             code: 201,
             description: 'User created successfully.',
-            schema: '#/components/schemas/User',
+            schema: '#/components/schemas/UserSchemasDoc',
             example: [
                 'id' => '550e8400-e29b-41d4-a716-446655440000',
                 'name' => 'John Doe',
@@ -59,7 +59,7 @@ use OpenApi\Attributes as OA;
         new ApiResponse(
             code: 409,
             description: 'Email already exists.',
-            schema: '#/components/schemas/Error',
+            schema: '#/components/Error',
             error: true,
             example: [
                 'code' => ApiError::EMAIL_ALREADY_EXISTS['code'],
@@ -70,7 +70,7 @@ use OpenApi\Attributes as OA;
         new ApiResponse(
             code: 422,
             description: 'Validation error.',
-            schema: '#/components/schemas/Error',
+            schema: '#/components/Error',
             error: true,
             example: [
                 'code' => ApiError::VALIDATION_ERROR['code'],

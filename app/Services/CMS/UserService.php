@@ -2,11 +2,11 @@
 
 namespace App\Services\CMS;
 
+use App\Exceptions\EmailAlreadyExistsException;
 use App\Models\User;
 use App\Queries\CMS\UserQuery;
-use Illuminate\Support\Facades\Auth;
-use App\Exceptions\EmailAlreadyExistsException;
 use Illuminate\Database\QueryException;
+use Illuminate\Support\Facades\Auth;
 
 class UserService
 {
@@ -15,7 +15,7 @@ class UserService
     public function create(array $data): User
     {
         if ($this->userQuery->existsByEmail($data['email'])) {
-            throw new EmailAlreadyExistsException();
+            throw new EmailAlreadyExistsException;
         }
 
         $data['status'] = 'active';
@@ -31,7 +31,7 @@ class UserService
                     'users_email_unique',
                 )
             ) {
-                throw new EmailAlreadyExistsException();
+                throw new EmailAlreadyExistsException;
             }
 
             throw $e;

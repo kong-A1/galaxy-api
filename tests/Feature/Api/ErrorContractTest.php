@@ -181,7 +181,7 @@ class ErrorContractTest extends TestCase
     public function test_too_many_requests_response_follows_error_contract(): void
     {
         Route::get('/api/test-too-many-requests', function () {
-            throw new TooManyRequestsException();
+            throw new TooManyRequestsException;
         });
 
         $response = $this->getJson('/api/test-too-many-requests');
@@ -203,7 +203,7 @@ class ErrorContractTest extends TestCase
     public function test_internal_server_error_response_follows_error_contract(): void
     {
         Route::get('/api/test-internal-error', function () {
-            throw new InternalException();
+            throw new InternalException;
         });
 
         $response = $this->getJson('/api/test-internal-error');

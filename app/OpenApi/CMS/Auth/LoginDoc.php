@@ -2,9 +2,9 @@
 
 namespace App\OpenApi\CMS\Auth;
 
-use App\Support\ApiError;
 use App\OpenApi\Helpers\ApiRequest;
 use App\OpenApi\Helpers\ApiResponse;
+use App\Support\ApiError;
 use OpenApi\Attributes as OA;
 
 #[OA\Post(
@@ -39,7 +39,7 @@ use OpenApi\Attributes as OA;
         new ApiResponse(
             code: 200,
             description: 'Login successful.',
-            schema: '#/components/schemas/User',
+            schema: '#/components/schemas/UserSchemasDoc',
             example: [
                 'id' => '550e8400-e29b-41d4-a716-446655440000',
                 'name' => 'John Doe',
@@ -51,7 +51,7 @@ use OpenApi\Attributes as OA;
         new ApiResponse(
             code: 401,
             description: 'Invalid credentials.',
-            schema: '#/components/schemas/Error',
+            schema: '#/components/Error',
             error: true,
             example: [
                 'code' => ApiError::INVALID_CREDENTIALS['code'],
@@ -62,7 +62,7 @@ use OpenApi\Attributes as OA;
         new ApiResponse(
             code: 403,
             description: 'Account is inactive.',
-            schema: '#/components/schemas/Error',
+            schema: '#/components/Error',
             error: true,
             example: [
                 'code' => ApiError::ACCOUNT_INACTIVE['code'],
@@ -74,7 +74,7 @@ use OpenApi\Attributes as OA;
         new ApiResponse(
             code: 422,
             description: 'Validation error.',
-            schema: '#/components/schemas/Error',
+            schema: '#/components/Error',
             error: true,
             example: [
                 'code' => ApiError::VALIDATION_ERROR['code'],
