@@ -49,7 +49,7 @@ class AuthControllerTest extends TestCase
             ]);
     }
 
-    public function test_it_returns_unauthenticated_when_credentials_are_invalid(): void
+    public function test_it_returns_invalid_credentials_when_credentials_are_invalid(): void
     {
         $authService = Mockery::mock(AuthService::class);
 
@@ -70,7 +70,7 @@ class AuthControllerTest extends TestCase
             ->assertStatus(401)
             ->assertJson([
                 'error' => [
-                    'code' => 'UNAUTHENTICATED',
+                    'code' => 'INVALID_CREDENTIALS',
                     'message' => 'The provided credentials are incorrect.',
                     'details' => [],
                 ],

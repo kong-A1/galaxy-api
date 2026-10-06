@@ -19,7 +19,7 @@
                 ],
                 "summary": "Login to CMS",
                 "description": "Authenticate a CMS user using email and password.",
-                "operationId": "8972f194b040f9b5cc43a6296c42a826",
+                "operationId": "b392ecfa76357b0169e44d8fdd4bc71e",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -103,7 +103,7 @@
                                 },
                                 "example": {
                                     "error": {
-                                        "code": "UNAUTHENTICATED",
+                                        "code": "INVALID_CREDENTIALS",
                                         "message": "The provided credentials are incorrect.",
                                         "details": {}
                                     }
@@ -162,6 +162,54 @@
                 }
             }
         },
+        "/api/cms/auth/logout": {
+            "post": {
+                "tags": [
+                    "CMS Auth"
+                ],
+                "summary": "Logout from CMS",
+                "description": "Logout the currently authenticated CMS user.",
+                "operationId": "716dfea7cd9834c67344fbd5417a8e3c",
+                "responses": {
+                    "204": {
+                        "description": "Logout successful.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {}
+                                    },
+                                    "type": "object"
+                                },
+                                "example": null
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "$ref": "#/components/schemas/Error"
+                                        }
+                                    },
+                                    "type": "object"
+                                },
+                                "example": {
+                                    "error": {
+                                        "code": "UNAUTHENTICATED",
+                                        "message": "Unauthenticated.",
+                                        "details": {}
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/cms/auth/me": {
             "get": {
                 "tags": [
@@ -169,7 +217,7 @@
                 ],
                 "summary": "Get authenticated user",
                 "description": "Return the currently authenticated CMS user.",
-                "operationId": "b8b71b8e06fd4e0505d1c6376742ab3e",
+                "operationId": "9f539acdcd3aa40e9fbcaa49928dbd54",
                 "responses": {
                     "200": {
                         "description": "Authenticated user.",
@@ -219,54 +267,6 @@
                 }
             }
         },
-        "/api/cms/auth/logout": {
-            "post": {
-                "tags": [
-                    "CMS Auth"
-                ],
-                "summary": "Logout from CMS",
-                "description": "Logout the currently authenticated CMS user.",
-                "operationId": "ee0f98fe0749e755bce0e9a4bef14066",
-                "responses": {
-                    "204": {
-                        "description": "Logout successful.",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "data": {}
-                                    },
-                                    "type": "object"
-                                },
-                                "example": null
-                            }
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthenticated.",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "error": {
-                                            "$ref": "#/components/schemas/Error"
-                                        }
-                                    },
-                                    "type": "object"
-                                },
-                                "example": {
-                                    "error": {
-                                        "code": "UNAUTHENTICATED",
-                                        "message": "Unauthenticated.",
-                                        "details": {}
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
         "/api/cms/user/create": {
             "post": {
                 "tags": [
@@ -274,7 +274,7 @@
                 ],
                 "summary": "Create a new user",
                 "description": "Create a new user account for the CMS.",
-                "operationId": "b9ac6171017f4740b89b23d223423108",
+                "operationId": "93d68e8fcba7aff085ae452344d210c9",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -356,6 +356,28 @@
                             }
                         }
                     },
+                    "409": {
+                        "description": "Email already exists.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "error": {
+                                            "$ref": "#/components/schemas/Error"
+                                        }
+                                    },
+                                    "type": "object"
+                                },
+                                "example": {
+                                    "error": {
+                                        "code": "EMAIL_ALREADY_EXISTS",
+                                        "message": "The email has already been taken.",
+                                        "details": {}
+                                    }
+                                }
+                            }
+                        }
+                    },
                     "422": {
                         "description": "Validation error.",
                         "content": {
@@ -377,28 +399,6 @@
                                                 "Email is required."
                                             ]
                                         }
-                                    }
-                                }
-                            }
-                        }
-                    },
-                    "409": {
-                        "description": "Email already exists.",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "error": {
-                                            "$ref": "#/components/schemas/Error"
-                                        }
-                                    },
-                                    "type": "object"
-                                },
-                                "example": {
-                                    "error": {
-                                        "code": "EMAIL_ALREADY_EXISTS",
-                                        "message": "The email has already been taken.",
-                                        "details": {}
                                     }
                                 }
                             }

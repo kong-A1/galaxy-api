@@ -45,7 +45,7 @@ class UserServiceTest extends TestCase
         $service->create([
             'name' => 'John Doe',
             'email' => 'john.doe@example.com',
-            'password' => 'password123',
+            'password' => 'pass@123',
         ]);
     }
 }

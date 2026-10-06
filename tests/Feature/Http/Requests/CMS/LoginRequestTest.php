@@ -15,7 +15,7 @@ class LoginRequestTest extends TestCase
         $validator = Validator::make(
             [
                 'email' => 'john.doe@example.com',
-                'password' => 'password123',
+                'password' => 'pass@123',
             ],
             $request->rules(),
         );
@@ -29,7 +29,7 @@ class LoginRequestTest extends TestCase
 
         $validator = Validator::make(
             [
-                'password' => 'password123',
+                'password' => 'pass@123',
             ],
             $request->rules(),
         );
@@ -45,7 +45,7 @@ class LoginRequestTest extends TestCase
         $validator = Validator::make(
             [
                 'email' => 'invalid-email',
-                'password' => 'password123',
+                'password' => 'pass@123',
             ],
             $request->rules(),
         );

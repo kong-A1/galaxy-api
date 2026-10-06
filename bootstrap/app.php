@@ -1,7 +1,12 @@
 <?php
 
+use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use App\Exceptions\AccountInactiveException;
 use App\Exceptions\EmailAlreadyExistsException;
+use App\Exceptions\InternalException;
+use App\Exceptions\TooManyRequestsException;
+use App\Support\ApiErrorMapper;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -39,10 +44,11 @@ return Application::configure(basePath: dirname(__DIR__))
                     return null;
                 }
 
+                $apiError = ApiErrorMapper::map($e);
+
                 return response()->json([
                     'error' => [
-                        'code' => 'UNAUTHENTICATED',
-                        'message' => $e->getMessage(),
+                        ...$apiError,
                         'details' => (object) [],
                     ],
                 ], 401);
@@ -58,10 +64,11 @@ return Application::configure(basePath: dirname(__DIR__))
                     return null;
                 }
 
+                $apiError = ApiErrorMapper::map($e);
+
                 return response()->json([
                     'error' => [
-                        'code' => 'ACCOUNT_INACTIVE',
-                        'message' => 'The account is inactive.',
+                        ...$apiError,
                         'details' => (object) [],
                     ],
                 ], 403);
@@ -70,13 +77,58 @@ return Application::configure(basePath: dirname(__DIR__))
 
         $exceptions->render(
             function (
+                NotFoundHttpException $e,
+                Request $request,
+            ) {
+                if (! $request->is('api/*')) {
+                    return null;
+                }
+
+                $apiError = ApiErrorMapper::map($e);
+
+                return response()->json([
+                    'error' => [
+                        ...$apiError,
+                        'details' => (object) [],
+                    ],
+                ], 404);
+            }
+        );
+
+        $exceptions->render(
+            function (
+                MethodNotAllowedHttpException $e,
+                Request $request,
+            ) {
+                if (! $request->is('api/*')) {
+                    return null;
+                }
+
+                $apiError = ApiErrorMapper::map($e);
+
+                return response()->json([
+                    'error' => [
+                        ...$apiError,
+                        'details' => (object) [],
+                    ],
+                ], 405);
+            }
+        );
+
+        $exceptions->render(
+            function (
                 EmailAlreadyExistsException $e,
                 Request $request,
             ) {
+                if (! $request->is('api/*')) {
+                    return null;
+                }
+
+                $apiError = ApiErrorMapper::map($e);
+
                 return response()->json([
                     'error' => [
-                        'code' => 'EMAIL_ALREADY_EXISTS',
-                        'message' => 'The email has already been taken.',
+                        ...$apiError,
                         'details' => (object) [],
                     ],
                 ], 409);
@@ -92,13 +144,54 @@ return Application::configure(basePath: dirname(__DIR__))
                     return null;
                 }
 
+                $apiError = ApiErrorMapper::map($e);
+
                 return response()->json([
                     'error' => [
-                        'code' => 'VALIDATION_ERROR',
-                        'message' => 'The given data is invalid.',
+                        ...$apiError,
                         'details' => $e->errors(),
                     ],
                 ], 422);
+            }
+        );
+
+        $exceptions->render(
+            function (
+                TooManyRequestsException $e,
+                Request $request,
+            ) {
+                if (! $request->is('api/*')) {
+                    return null;
+                }
+
+                $apiError = ApiErrorMapper::map($e);
+
+                return response()->json([
+                    'error' => [
+                        ...$apiError,
+                        'details' => (object) [],
+                    ],
+                ], 429);
+            }
+        );
+
+        $exceptions->render(
+            function (
+                InternalException $e,
+                Request $request,
+            ) {
+                if (! $request->is('api/*')) {
+                    return null;
+                }
+
+                $apiError = ApiErrorMapper::map($e);
+
+                return response()->json([
+                    'error' => [
+                        ...$apiError,
+                        'details' => (object) [],
+                    ],
+                ], 500);
             }
         );
     })

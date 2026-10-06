@@ -6,7 +6,7 @@ use App\Models\User;
 
 trait UserTest
 {
-    protected function createTestUser(): User
+    protected function createUserTest(): User
     {
         return User::factory()->create();
     }

@@ -39,7 +39,7 @@ class CreateUserTest extends TestCase
 
     public function test_it_creates_user_successfully(): void
     {
-        $actor = $this->createTestUser();
+        $actor = $this->createUserTest();
         $this->actingAs($actor);
 
         $payload = [
@@ -73,7 +73,7 @@ class CreateUserTest extends TestCase
 
     public function test_it_returns_validation_error_when_email_is_missing(): void
     {
-        $actor = $this->createTestUser();
+        $actor = $this->createUserTest();
         $this->actingAs($actor);
 
         $payload = [
@@ -105,7 +105,7 @@ class CreateUserTest extends TestCase
 
     public function test_it_returns_conflict_when_email_already_exists(): void
     {
-        $actor = $this->createTestUser();
+        $actor = $this->createUserTest();
         $this->actingAs($actor);
 
         User::factory()->create([

@@ -2,6 +2,7 @@
 
 namespace App\OpenApi\CMS\User;
 
+use App\Support\ApiError;
 use App\OpenApi\Helpers\ApiRequest;
 use App\OpenApi\Helpers\ApiResponse;
 use OpenApi\Attributes as OA;
@@ -56,13 +57,24 @@ use OpenApi\Attributes as OA;
         ),
 
         new ApiResponse(
+            code: 409,
+            description: 'Email already exists.',
+            schema: '#/components/schemas/Error',
+            error: true,
+            example: [
+                'code' => ApiError::EMAIL_ALREADY_EXISTS['code'],
+                'message' => ApiError::EMAIL_ALREADY_EXISTS['message'],
+            ],
+        ),
+
+        new ApiResponse(
             code: 422,
             description: 'Validation error.',
             schema: '#/components/schemas/Error',
             error: true,
             example: [
-                'code' => 'VALIDATION_ERROR',
-                'message' => 'The given data is invalid.',
+                'code' => ApiError::VALIDATION_ERROR['code'],
+                'message' => ApiError::VALIDATION_ERROR['message'],
                 'details' => [
                     'email' => [
                         'Email is required.',
@@ -70,17 +82,6 @@ use OpenApi\Attributes as OA;
                 ],
             ],
         ),
-
-        new ApiResponse(
-            code: 409,
-            description: 'Email already exists.',
-            schema: '#/components/schemas/Error',
-            error: true,
-            example: [
-                'code' => 'EMAIL_ALREADY_EXISTS',
-                'message' => 'The email has already been taken.',
-            ],
-        ),
     ],
 )]
-class User {}
+class CreateUserDoc {}

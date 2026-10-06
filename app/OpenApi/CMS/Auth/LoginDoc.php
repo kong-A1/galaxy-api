@@ -2,6 +2,7 @@
 
 namespace App\OpenApi\CMS\Auth;
 
+use App\Support\ApiError;
 use App\OpenApi\Helpers\ApiRequest;
 use App\OpenApi\Helpers\ApiResponse;
 use OpenApi\Attributes as OA;
@@ -53,9 +54,8 @@ use OpenApi\Attributes as OA;
             schema: '#/components/schemas/Error',
             error: true,
             example: [
-                'code' => 'UNAUTHENTICATED',
-                'message' => 'The provided credentials are incorrect.',
-                'details' => [],
+                'code' => ApiError::INVALID_CREDENTIALS['code'],
+                'message' => ApiError::INVALID_CREDENTIALS['message'],
             ],
         ),
 
@@ -65,8 +65,8 @@ use OpenApi\Attributes as OA;
             schema: '#/components/schemas/Error',
             error: true,
             example: [
-                'code' => 'ACCOUNT_INACTIVE',
-                'message' => 'The account is inactive.',
+                'code' => ApiError::ACCOUNT_INACTIVE['code'],
+                'message' => ApiError::ACCOUNT_INACTIVE['message'],
                 'details' => [],
             ],
         ),
@@ -77,8 +77,8 @@ use OpenApi\Attributes as OA;
             schema: '#/components/schemas/Error',
             error: true,
             example: [
-                'code' => 'VALIDATION_ERROR',
-                'message' => 'The given data is invalid.',
+                'code' => ApiError::VALIDATION_ERROR['code'],
+                'message' => ApiError::VALIDATION_ERROR['message'],
                 'details' => [
                     'email' => [
                         'The email field is required.',
@@ -89,62 +89,4 @@ use OpenApi\Attributes as OA;
     ],
 )]
 
-#[OA\Get(
-    path: '/api/cms/auth/me',
-    summary: 'Get authenticated user',
-    description: 'Return the currently authenticated CMS user.',
-    tags: ['CMS Auth'],
-
-    responses: [
-        new ApiResponse(
-            code: 200,
-            description: 'Authenticated user.',
-            schema: '#/components/schemas/User',
-            example: [
-                'id' => '550e8400-e29b-41d4-a716-446655440000',
-                'name' => 'John Doe',
-                'email' => 'john.doe@example.com',
-                'status' => 'active',
-            ],
-        ),
-
-        new ApiResponse(
-            code: 401,
-            description: 'Unauthenticated.',
-            schema: '#/components/schemas/Error',
-            error: true,
-            example: [
-                'code' => 'UNAUTHENTICATED',
-                'message' => 'Unauthenticated.',
-                'details' => [],
-            ],
-        ),
-    ],
-)]
-
-#[OA\Post(
-    path: '/api/cms/auth/logout',
-    summary: 'Logout from CMS',
-    description: 'Logout the currently authenticated CMS user.',
-    tags: ['CMS Auth'],
-
-    responses: [
-        new ApiResponse(
-            code: 204,
-            description: 'Logout successful.',
-        ),
-
-        new ApiResponse(
-            code: 401,
-            description: 'Unauthenticated.',
-            schema: '#/components/schemas/Error',
-            error: true,
-            example: [
-                'code' => 'UNAUTHENTICATED',
-                'message' => 'Unauthenticated.',
-                'details' => [],
-            ],
-        ),
-    ],
-)]
-class Auth {}
+class LoginDoc {}
