@@ -2,6 +2,7 @@
 
 namespace App\OpenApi\Helpers;
 
+use DateTimeInterface;
 use OpenApi\Attributes as OA;
 
 class OpenApiResponse extends OA\Response
@@ -25,6 +26,12 @@ class OpenApiResponse extends OA\Response
         $key = $error ? 'error' : 'data';
 
         if ($example !== null) {
+            array_walk_recursive($example, function (&$value): void {
+                if ($value instanceof DateTimeInterface) {
+                    $value = $value->format('Y-m-d H:i:s.v');
+                }
+            });
+
             if ($error) {
                 $example['details'] ??= [];
                 $example['details'] = (object) $example['details'];

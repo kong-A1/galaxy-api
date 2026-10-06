@@ -12,6 +12,8 @@ use OpenApi\Attributes as OA;
         'name',
         'email',
         'status',
+        'created_at',
+        'updated_at',
     ],
     properties: [
         new OA\Property(
@@ -38,6 +40,20 @@ use OpenApi\Attributes as OA;
             property: 'status',
             type: 'string',
             example: 'active',
+        ),
+
+        new OA\Property(
+            property: 'created_at',
+            type: 'string',
+            format: 'date-time',
+            example: '2026-01-01T00:00:00.000000Z',
+        ),
+
+        new OA\Property(
+            property: 'updated_at',
+            type: 'string',
+            format: 'date-time',
+            example: '2026-01-01T00:00:00.000000Z',
         ),
     ],
 )]

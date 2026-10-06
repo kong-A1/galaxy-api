@@ -38,7 +38,7 @@ use OpenApi\Attributes as OA;
                 property: 'password',
                 type: 'string',
                 minLength: 8,
-                example: 'password123',
+                example: 'pass@123',
             ),
         ],
     ),
@@ -53,6 +53,8 @@ use OpenApi\Attributes as OA;
                 'name' => 'John Doe',
                 'email' => 'john.doe@example.com',
                 'status' => 'active',
+                'created_at' => '2026-01-01T00:00:00.000000Z',
+                'updated_at' => '2026-01-01T00:00:00.000000Z',
             ],
         ),
 

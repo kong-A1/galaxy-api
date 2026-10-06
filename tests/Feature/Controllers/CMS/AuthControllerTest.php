@@ -46,6 +46,25 @@ class AuthControllerTest extends TestCase
                     'email' => 'john.doe@example.com',
                     'status' => 'active',
                 ],
+            ])
+            ->assertExactJsonStructure([
+                'data' => [
+                    'id',
+                    'name',
+                    'email',
+                    'status',
+                    'created_at',
+                    'updated_at',
+                ],
+            ])
+            ->assertJsonMissingPaths([
+                'data.password',
+                'data.remember_token',
+                'data.created_by',
+                'data.updated_by',
+                'data.deleted_by',
+                'data.deleted_at',
+                'data.email_verified_at',
             ]);
     }
 
