@@ -2,7 +2,7 @@
 
 namespace App\OpenApi\CMS\Auth;
 
-use App\OpenApi\Helpers\ApiResponse;
+use App\OpenApi\Helpers\OpenApiResponse;
 use App\Support\ApiError;
 use OpenApi\Attributes as OA;
 
@@ -13,7 +13,7 @@ use OpenApi\Attributes as OA;
     tags: ['CMS Auth'],
 
     responses: [
-        new ApiResponse(
+        new OpenApiResponse(
             code: 200,
             description: 'Authenticated user.',
             schema: '#/components/schemas/UserSchemasDoc',
@@ -25,10 +25,10 @@ use OpenApi\Attributes as OA;
             ],
         ),
 
-        new ApiResponse(
+        new OpenApiResponse(
             code: 401,
             description: 'Unauthenticated.',
-            schema: '#/components/Error',
+            schema: '#/components/schemas/OpenApiError',
             error: true,
             example: [
                 'code' => ApiError::UNAUTHENTICATED['code'],

@@ -4,7 +4,7 @@ namespace App\OpenApi\Helpers;
 
 use OpenApi\Attributes as OA;
 
-class ApiResponse extends OA\Response
+class OpenApiResponse extends OA\Response
 {
     public function __construct(
         int $code,
@@ -13,6 +13,15 @@ class ApiResponse extends OA\Response
         ?array $example = null,
         bool $error = false,
     ) {
+        if ($schema === null && $example === null) {
+            parent::__construct(
+                response: $code,
+                description: $description,
+            );
+
+            return;
+        }
+
         $key = $error ? 'error' : 'data';
 
         if ($example !== null) {

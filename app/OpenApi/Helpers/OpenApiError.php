@@ -1,11 +1,11 @@
 <?php
 
-namespace App\OpenApi\Schemas;
+namespace App\OpenApi\Helpers;
 
 use OpenApi\Attributes as OA;
 
 #[OA\Schema(
-    schema: 'Error',
+    schema: 'OpenApiError',
     type: 'object',
     required: [
         'code',
@@ -38,4 +38,4 @@ use OpenApi\Attributes as OA;
         ),
     ],
 )]
-class Error {}
+class OpenApiError {}

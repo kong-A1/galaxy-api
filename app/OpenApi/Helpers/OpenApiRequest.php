@@ -4,7 +4,7 @@ namespace App\OpenApi\Helpers;
 
 use OpenApi\Attributes as OA;
 
-class ApiRequest extends OA\RequestBody
+class OpenApiRequest extends OA\RequestBody
 {
     public function __construct(
         array $required = [],

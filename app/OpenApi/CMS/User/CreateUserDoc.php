@@ -2,8 +2,8 @@
 
 namespace App\OpenApi\CMS\User;
 
-use App\OpenApi\Helpers\ApiRequest;
-use App\OpenApi\Helpers\ApiResponse;
+use App\OpenApi\Helpers\OpenApiRequest;
+use App\OpenApi\Helpers\OpenApiResponse;
 use App\Support\ApiError;
 use OpenApi\Attributes as OA;
 
@@ -13,7 +13,7 @@ use OpenApi\Attributes as OA;
     description: 'Create a new user account for the CMS.',
     tags: ['CMS Users'],
 
-    requestBody: new ApiRequest(
+    requestBody: new OpenApiRequest(
         required: [
             'name',
             'email',
@@ -44,7 +44,7 @@ use OpenApi\Attributes as OA;
     ),
 
     responses: [
-        new ApiResponse(
+        new OpenApiResponse(
             code: 201,
             description: 'User created successfully.',
             schema: '#/components/schemas/UserSchemasDoc',
@@ -56,10 +56,10 @@ use OpenApi\Attributes as OA;
             ],
         ),
 
-        new ApiResponse(
+        new OpenApiResponse(
             code: 409,
             description: 'Email already exists.',
-            schema: '#/components/Error',
+            schema: '#/components/schemas/OpenApiError',
             error: true,
             example: [
                 'code' => ApiError::EMAIL_ALREADY_EXISTS['code'],
@@ -67,10 +67,10 @@ use OpenApi\Attributes as OA;
             ],
         ),
 
-        new ApiResponse(
+        new OpenApiResponse(
             code: 422,
             description: 'Validation error.',
-            schema: '#/components/Error',
+            schema: '#/components/schemas/OpenApiError',
             error: true,
             example: [
                 'code' => ApiError::VALIDATION_ERROR['code'],

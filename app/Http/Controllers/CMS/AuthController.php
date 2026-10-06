@@ -4,6 +4,7 @@ namespace App\Http\Controllers\CMS;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\CMS\LoginRequest;
+use App\Http\Response\CMS\UserResponse;
 use App\Services\CMS\AuthService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
@@ -22,14 +23,7 @@ class AuthController extends Controller
             $request->validated('password'),
         );
 
-        return response()->json([
-            'data' => [
-                'id' => $user->id,
-                'name' => $user->name,
-                'email' => $user->email,
-                'status' => $user->status,
-            ],
-        ]);
+        return UserResponse::make($user);
     }
 
     public function logout(): Response
@@ -46,13 +40,6 @@ class AuthController extends Controller
     {
         $user = Auth::user();
 
-        return response()->json([
-            'data' => [
-                'id' => $user->id,
-                'name' => $user->name,
-                'email' => $user->email,
-                'status' => $user->status,
-            ],
-        ]);
+        return UserResponse::make($user);
     }
 }

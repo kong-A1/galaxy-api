@@ -2,7 +2,7 @@
 
 namespace App\OpenApi\Helpers;
 
-class ApiExample
+class OpenApiExample
 {
     public static function data(array $data): array
     {

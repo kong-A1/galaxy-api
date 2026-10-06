@@ -73,7 +73,7 @@
                                 "schema": {
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/components/schemas/User"
+                                            "$ref": "#/components/schemas/UserSchemasDoc"
                                         }
                                     },
                                     "type": "object"
@@ -96,7 +96,7 @@
                                 "schema": {
                                     "properties": {
                                         "error": {
-                                            "$ref": "#/components/schemas/Error"
+                                            "$ref": "#/components/schemas/OpenApiError"
                                         }
                                     },
                                     "type": "object"
@@ -118,7 +118,7 @@
                                 "schema": {
                                     "properties": {
                                         "error": {
-                                            "$ref": "#/components/schemas/Error"
+                                            "$ref": "#/components/schemas/OpenApiError"
                                         }
                                     },
                                     "type": "object"
@@ -140,7 +140,7 @@
                                 "schema": {
                                     "properties": {
                                         "error": {
-                                            "$ref": "#/components/schemas/Error"
+                                            "$ref": "#/components/schemas/OpenApiError"
                                         }
                                     },
                                     "type": "object"
@@ -172,18 +172,7 @@
                 "operationId": "716dfea7cd9834c67344fbd5417a8e3c",
                 "responses": {
                     "204": {
-                        "description": "Logout successful.",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "data": {}
-                                    },
-                                    "type": "object"
-                                },
-                                "example": null
-                            }
-                        }
+                        "description": "No Content."
                     },
                     "401": {
                         "description": "Unauthenticated.",
@@ -192,7 +181,7 @@
                                 "schema": {
                                     "properties": {
                                         "error": {
-                                            "$ref": "#/components/schemas/Error"
+                                            "$ref": "#/components/schemas/OpenApiError"
                                         }
                                     },
                                     "type": "object"
@@ -226,7 +215,7 @@
                                 "schema": {
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/components/schemas/User"
+                                            "$ref": "#/components/schemas/UserSchemasDoc"
                                         }
                                     },
                                     "type": "object"
@@ -249,7 +238,7 @@
                                 "schema": {
                                     "properties": {
                                         "error": {
-                                            "$ref": "#/components/schemas/Error"
+                                            "$ref": "#/components/schemas/OpenApiError"
                                         }
                                     },
                                     "type": "object"
@@ -340,7 +329,7 @@
                                 "schema": {
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/components/schemas/User"
+                                            "$ref": "#/components/schemas/UserSchemasDoc"
                                         }
                                     },
                                     "type": "object"
@@ -363,7 +352,7 @@
                                 "schema": {
                                     "properties": {
                                         "error": {
-                                            "$ref": "#/components/schemas/Error"
+                                            "$ref": "#/components/schemas/OpenApiError"
                                         }
                                     },
                                     "type": "object"
@@ -385,7 +374,7 @@
                                 "schema": {
                                     "properties": {
                                         "error": {
-                                            "$ref": "#/components/schemas/Error"
+                                            "$ref": "#/components/schemas/OpenApiError"
                                         }
                                     },
                                     "type": "object"
@@ -410,7 +399,7 @@
     },
     "components": {
         "schemas": {
-            "Error": {
+            "OpenApiError": {
                 "required": [
                     "code",
                     "message",
@@ -438,7 +427,7 @@
                 },
                 "type": "object"
             },
-            "User": {
+            "UserSchemasDoc": {
                 "required": [
                     "id",
                     "name",

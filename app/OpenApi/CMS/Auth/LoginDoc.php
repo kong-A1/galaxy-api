@@ -2,8 +2,8 @@
 
 namespace App\OpenApi\CMS\Auth;
 
-use App\OpenApi\Helpers\ApiRequest;
-use App\OpenApi\Helpers\ApiResponse;
+use App\OpenApi\Helpers\OpenApiRequest;
+use App\OpenApi\Helpers\OpenApiResponse;
 use App\Support\ApiError;
 use OpenApi\Attributes as OA;
 
@@ -13,7 +13,7 @@ use OpenApi\Attributes as OA;
     description: 'Authenticate a CMS user using email and password.',
     tags: ['CMS Auth'],
 
-    requestBody: new ApiRequest(
+    requestBody: new OpenApiRequest(
         required: [
             'email',
             'password',
@@ -36,7 +36,7 @@ use OpenApi\Attributes as OA;
     ),
 
     responses: [
-        new ApiResponse(
+        new OpenApiResponse(
             code: 200,
             description: 'Login successful.',
             schema: '#/components/schemas/UserSchemasDoc',
@@ -48,10 +48,10 @@ use OpenApi\Attributes as OA;
             ],
         ),
 
-        new ApiResponse(
+        new OpenApiResponse(
             code: 401,
             description: 'Invalid credentials.',
-            schema: '#/components/Error',
+            schema: '#/components/schemas/OpenApiError',
             error: true,
             example: [
                 'code' => ApiError::INVALID_CREDENTIALS['code'],
@@ -59,10 +59,10 @@ use OpenApi\Attributes as OA;
             ],
         ),
 
-        new ApiResponse(
+        new OpenApiResponse(
             code: 403,
             description: 'Account is inactive.',
-            schema: '#/components/Error',
+            schema: '#/components/schemas/OpenApiError',
             error: true,
             example: [
                 'code' => ApiError::ACCOUNT_INACTIVE['code'],
@@ -71,10 +71,10 @@ use OpenApi\Attributes as OA;
             ],
         ),
 
-        new ApiResponse(
+        new OpenApiResponse(
             code: 422,
             description: 'Validation error.',
-            schema: '#/components/Error',
+            schema: '#/components/schemas/OpenApiError',
             error: true,
             example: [
                 'code' => ApiError::VALIDATION_ERROR['code'],
