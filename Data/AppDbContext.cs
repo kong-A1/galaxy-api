@@ -17,4 +17,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
     public DbSet<PermissionRole> PermissionRoles => Set<PermissionRole>();
     public DbSet<MasterMenu> MasterMenus => Set<MasterMenu>();
     public DbSet<MenuPermission> MenuPermissions => Set<MenuPermission>();
+    public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
+    public DbSet<PasswordResetToken> PasswordResetTokens => Set<PasswordResetToken>();
+    public DbSet<AuditLog> AuditLogs => Set<AuditLog>();
 }
