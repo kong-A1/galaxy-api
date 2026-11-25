@@ -1,8 +1,4 @@
-using galaxy_api.Data.TenantDb;
-using EFCore.NamingConventions;
-using galaxy_api.Data.Interceptors;
-using galaxy_api.Services;
-using Microsoft.EntityFrameworkCore;
+using galaxy_api.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,14 +6,8 @@ var builder = WebApplication.CreateBuilder(args);
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 
-builder.Services.AddScoped<ICurrentUser, AnonymousCurrentUser>();
-builder.Services.AddScoped<AuditInterceptor>();
-
-builder.Services.AddDbContext<TenantDbContext>(
-    (sp, o) => o.UseNpgsql(builder.Configuration.GetConnectionString("Default"))
-        .UseSnakeCaseNamingConvention()
-        .AddInterceptors(sp.GetRequiredService<AuditInterceptor>())
-);
+builder.Services.AddAppServices();
+builder.Services.AddDatabase(builder.Configuration);
 
 var app = builder.Build();
 

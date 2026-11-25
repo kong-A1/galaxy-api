@@ -1,5 +1,5 @@
-using galaxy_api.Models;
-using galaxy_api.Services;
+using galaxy_api.Entities;
+using galaxy_api.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 
@@ -37,7 +37,7 @@ public class AuditInterceptor(ICurrentUser currentUser) : SaveChangesInterceptor
                 entry.Property(x => x.CreatedAt).CurrentValue = now;
                 entry.Property(x => x.UpdatedAt).CurrentValue = now;
 
-                if (entry.Entity is AuditableEntity created)
+                if (entry.Entity is AuditableBase created)
                 {
                     created.CreatedBy ??= userId;
                     created.UpdatedBy ??= userId;
@@ -48,20 +48,20 @@ public class AuditInterceptor(ICurrentUser currentUser) : SaveChangesInterceptor
                 // แก้ไข
                 entry.Property(x => x.UpdatedAt).CurrentValue = now;
 
-                if (entry.Entity is AuditableEntity)
+                if (entry.Entity is AuditableBase)
                 {
-                    entry.Property(nameof(AuditableEntity.UpdatedBy)).CurrentValue = userId;
+                    entry.Property(nameof(AuditableBase.UpdatedBy)).CurrentValue = userId;
                 }
             }
-            else if (entry.State == EntityState.Deleted && entry.Entity is AuditableEntity)
+            else if (entry.State == EntityState.Deleted && entry.Entity is AuditableBase)
             {
                 // ลบ → เปลี่ยนเป็น soft delete
                 entry.State = EntityState.Unchanged;
 
-                entry.Property(nameof(AuditableEntity.DeletedAt)).CurrentValue = now;
-                entry.Property(nameof(AuditableEntity.DeletedBy)).CurrentValue = userId;
+                entry.Property(nameof(AuditableBase.DeletedAt)).CurrentValue = now;
+                entry.Property(nameof(AuditableBase.DeletedBy)).CurrentValue = userId;
                 entry.Property(x => x.UpdatedAt).CurrentValue = now;
-                entry.Property(nameof(AuditableEntity.UpdatedBy)).CurrentValue = userId;
+                entry.Property(nameof(AuditableBase.UpdatedBy)).CurrentValue = userId;
             }
         }
     }
