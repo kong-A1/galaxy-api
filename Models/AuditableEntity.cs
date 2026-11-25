@@ -1,6 +1,6 @@
 namespace galaxy_api.Models;
 
-public abstract class AuditableEntity
+public abstract class AuditableEntity : ITimestamped
 {
     public Guid Id { get; set; }
     public Guid? CreatedBy { get; set; }
