@@ -81,6 +81,25 @@ namespace galaxy_api.Migrations
                     b.ToTable("permissions", (string)null);
                 });
 
+            modelBuilder.Entity("galaxy_api.Models.PermissionRole", b =>
+                {
+                    b.Property<Guid>("RoleId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("role_id");
+
+                    b.Property<Guid>("PermissionId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("permission_id");
+
+                    b.HasKey("RoleId", "PermissionId")
+                        .HasName("pk_permission_role");
+
+                    b.HasIndex("PermissionId")
+                        .HasDatabaseName("ix_permission_role_permission_id");
+
+                    b.ToTable("permission_role", (string)null);
+                });
+
             modelBuilder.Entity("galaxy_api.Models.Role", b =>
                 {
                     b.Property<Guid>("Id")
@@ -270,6 +289,55 @@ namespace galaxy_api.Migrations
                         });
                 });
 
+            modelBuilder.Entity("galaxy_api.Models.UserRole", b =>
+                {
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("user_id");
+
+                    b.Property<Guid>("RoleId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("role_id");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at")
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+                    b.Property<Guid?>("CreatedBy")
+                        .HasColumnType("uuid")
+                        .HasColumnName("created_by");
+
+                    b.HasKey("UserId", "RoleId")
+                        .HasName("pk_user_roles");
+
+                    b.HasIndex("CreatedBy")
+                        .HasDatabaseName("ix_user_roles_created_by");
+
+                    b.HasIndex("RoleId")
+                        .HasDatabaseName("ix_user_roles_role_id");
+
+                    b.ToTable("user_roles", (string)null);
+                });
+
+            modelBuilder.Entity("galaxy_api.Models.PermissionRole", b =>
+                {
+                    b.HasOne("galaxy_api.Models.Permission", null)
+                        .WithMany()
+                        .HasForeignKey("PermissionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_permission_role_permissions_permission_id");
+
+                    b.HasOne("galaxy_api.Models.Role", null)
+                        .WithMany()
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_permission_role_roles_role_id");
+                });
+
             modelBuilder.Entity("galaxy_api.Models.Role", b =>
                 {
                     b.HasOne("galaxy_api.Models.User", null)
@@ -310,6 +378,29 @@ namespace galaxy_api.Migrations
                         .HasForeignKey("UpdatedBy")
                         .OnDelete(DeleteBehavior.Restrict)
                         .HasConstraintName("fk_users_users_updated_by");
+                });
+
+            modelBuilder.Entity("galaxy_api.Models.UserRole", b =>
+                {
+                    b.HasOne("galaxy_api.Models.User", null)
+                        .WithMany()
+                        .HasForeignKey("CreatedBy")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .HasConstraintName("fk_user_roles_users_created_by");
+
+                    b.HasOne("galaxy_api.Models.Role", null)
+                        .WithMany()
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("fk_user_roles_roles_role_id");
+
+                    b.HasOne("galaxy_api.Models.User", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_user_roles_users_user_id");
                 });
 #pragma warning restore 612, 618
         }
