@@ -11,4 +11,6 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
     }
 
     public DbSet<Permission> Permissions => Set<Permission>();
+    public DbSet<Role> Roles => Set<Role>();
+    public DbSet<User> Users => Set<User>();
 }
