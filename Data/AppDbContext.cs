@@ -15,4 +15,6 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
     public DbSet<User> Users => Set<User>();
     public DbSet<UserRole> UserRoles => Set<UserRole>();
     public DbSet<PermissionRole> PermissionRoles => Set<PermissionRole>();
+    public DbSet<MasterMenu> MasterMenus => Set<MasterMenu>();
+    public DbSet<MenuPermission> MenuPermissions => Set<MenuPermission>();
 }

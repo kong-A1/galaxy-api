@@ -22,6 +22,131 @@ namespace galaxy_api.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("galaxy_api.Models.MasterMenu", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id")
+                        .HasDefaultValueSql("gen_random_uuid()");
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasColumnName("code");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at")
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+                    b.Property<Guid?>("CreatedBy")
+                        .HasColumnType("uuid")
+                        .HasColumnName("created_by");
+
+                    b.Property<DateTimeOffset?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("deleted_at");
+
+                    b.Property<Guid?>("DeletedBy")
+                        .HasColumnType("uuid")
+                        .HasColumnName("deleted_by");
+
+                    b.Property<string>("Icon")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)")
+                        .HasColumnName("icon");
+
+                    b.Property<bool>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(true)
+                        .HasColumnName("is_active");
+
+                    b.Property<string>("NameEn")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)")
+                        .HasColumnName("name_en");
+
+                    b.Property<string>("NameTh")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)")
+                        .HasColumnName("name_th");
+
+                    b.Property<Guid?>("ParentId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("parent_id");
+
+                    b.Property<string>("Route")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("route");
+
+                    b.Property<int>("SortOrder")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasDefaultValue(0)
+                        .HasColumnName("sort_order");
+
+                    b.Property<DateTimeOffset>("UpdatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at")
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+                    b.Property<Guid?>("UpdatedBy")
+                        .HasColumnType("uuid")
+                        .HasColumnName("updated_by");
+
+                    b.HasKey("Id")
+                        .HasName("pk_master_menus");
+
+                    b.HasIndex("Code")
+                        .IsUnique()
+                        .HasDatabaseName("ix_master_menus_code")
+                        .HasFilter("deleted_at IS NULL");
+
+                    b.HasIndex("CreatedBy")
+                        .HasDatabaseName("ix_master_menus_created_by");
+
+                    b.HasIndex("DeletedBy")
+                        .HasDatabaseName("ix_master_menus_deleted_by");
+
+                    b.HasIndex("ParentId")
+                        .HasDatabaseName("ix_master_menus_parent_id");
+
+                    b.HasIndex("UpdatedBy")
+                        .HasDatabaseName("ix_master_menus_updated_by");
+
+                    b.ToTable("master_menus", null, t =>
+                        {
+                            t.HasCheckConstraint("ck_master_menus_parent_not_self", "parent_id <> id");
+                        });
+                });
+
+            modelBuilder.Entity("galaxy_api.Models.MenuPermission", b =>
+                {
+                    b.Property<Guid>("MenuId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("menu_id");
+
+                    b.Property<Guid>("PermissionId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("permission_id");
+
+                    b.HasKey("MenuId", "PermissionId")
+                        .HasName("pk_menu_permissions");
+
+                    b.HasIndex("PermissionId")
+                        .HasDatabaseName("ix_menu_permissions_permission_id");
+
+                    b.ToTable("menu_permissions", (string)null);
+                });
+
             modelBuilder.Entity("galaxy_api.Models.Permission", b =>
                 {
                     b.Property<Guid>("Id")
@@ -319,6 +444,50 @@ namespace galaxy_api.Migrations
                         .HasDatabaseName("ix_user_roles_role_id");
 
                     b.ToTable("user_roles", (string)null);
+                });
+
+            modelBuilder.Entity("galaxy_api.Models.MasterMenu", b =>
+                {
+                    b.HasOne("galaxy_api.Models.User", null)
+                        .WithMany()
+                        .HasForeignKey("CreatedBy")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .HasConstraintName("fk_master_menus_users_created_by");
+
+                    b.HasOne("galaxy_api.Models.User", null)
+                        .WithMany()
+                        .HasForeignKey("DeletedBy")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .HasConstraintName("fk_master_menus_users_deleted_by");
+
+                    b.HasOne("galaxy_api.Models.MasterMenu", null)
+                        .WithMany()
+                        .HasForeignKey("ParentId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .HasConstraintName("fk_master_menus_master_menus_parent_id");
+
+                    b.HasOne("galaxy_api.Models.User", null)
+                        .WithMany()
+                        .HasForeignKey("UpdatedBy")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .HasConstraintName("fk_master_menus_users_updated_by");
+                });
+
+            modelBuilder.Entity("galaxy_api.Models.MenuPermission", b =>
+                {
+                    b.HasOne("galaxy_api.Models.MasterMenu", null)
+                        .WithMany()
+                        .HasForeignKey("MenuId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_menu_permissions_master_menus_menu_id");
+
+                    b.HasOne("galaxy_api.Models.Permission", null)
+                        .WithMany()
+                        .HasForeignKey("PermissionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_menu_permissions_permissions_permission_id");
                 });
 
             modelBuilder.Entity("galaxy_api.Models.PermissionRole", b =>
