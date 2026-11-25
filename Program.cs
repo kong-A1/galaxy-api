@@ -1,4 +1,4 @@
-using galaxy_api.Data;
+using galaxy_api.Data.TenantDb;
 using EFCore.NamingConventions;
 using galaxy_api.Data.Interceptors;
 using galaxy_api.Services;
@@ -13,7 +13,7 @@ builder.Services.AddOpenApi();
 builder.Services.AddScoped<ICurrentUser, AnonymousCurrentUser>();
 builder.Services.AddScoped<AuditInterceptor>();
 
-builder.Services.AddDbContext<AppDbContext>(
+builder.Services.AddDbContext<TenantDbContext>(
     (sp, o) => o.UseNpgsql(builder.Configuration.GetConnectionString("Default"))
         .UseSnakeCaseNamingConvention()
         .AddInterceptors(sp.GetRequiredService<AuditInterceptor>())

@@ -1,12 +1,13 @@
 using galaxy_api.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
+using galaxy_api.Data.TenantDb.Configurations;
 
-namespace galaxy_api.Data;
+namespace galaxy_api.Data.TenantDb;
 
-public class AppDbContext : DbContext
+public class TenantDbContext : DbContext
 {
-    public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
+    public TenantDbContext(DbContextOptions<TenantDbContext> options) : base(options)
     {
         ChangeTracker.CascadeDeleteTiming = CascadeTiming.OnSaveChanges;
         ChangeTracker.DeleteOrphansTiming = CascadeTiming.OnSaveChanges;
@@ -14,7 +15,9 @@ public class AppDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);
+        modelBuilder.ApplyConfigurationsFromAssembly(
+            typeof(TenantDbContext).Assembly,
+            type => type.Namespace == typeof(UserConfiguration).Namespace);
     }
 
     public DbSet<Permission> Permissions => Set<Permission>();
