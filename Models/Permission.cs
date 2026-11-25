@@ -1,6 +1,6 @@
 namespace galaxy_api.Models;
 
-public class Permission
+public class Permission : ITimestamped
 {
     public Guid Id { get; set; }
     public required string Code { get; set; }

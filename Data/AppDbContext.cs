@@ -1,10 +1,17 @@
 using galaxy_api.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace galaxy_api.Data;
 
-public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(options)
+public class AppDbContext : DbContext
 {
+    public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
+    {
+        ChangeTracker.CascadeDeleteTiming = CascadeTiming.OnSaveChanges;
+        ChangeTracker.DeleteOrphansTiming = CascadeTiming.OnSaveChanges;
+    }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);
