@@ -5,13 +5,13 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
-using galaxy_api.Data;
+using galaxy_api.Data.TenantDb;
 
 #nullable disable
 
-namespace galaxy_api.Migrations
+namespace galaxy_api.Migrations.TenantDb
 {
-    [DbContext(typeof(AppDbContext))]
+    [DbContext(typeof(TenantDbContext))]
     [Migration("20261125030753_Initial")]
     partial class Initial
     {

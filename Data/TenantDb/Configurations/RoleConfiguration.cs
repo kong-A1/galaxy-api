@@ -2,7 +2,7 @@ using galaxy_api.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace galaxy_api.Data.Configurations;
+namespace galaxy_api.Data.TenantDb.Configurations;
 
 public class RoleConfiguration : IEntityTypeConfiguration<Role>
 {
