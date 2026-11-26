@@ -11,6 +11,7 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddAppServices(this IServiceCollection services)
     {
         services.AddScoped<ICurrentUser, CurrentUser>();
+        services.AddScoped<IRoleService, RoleService>();
 
         return services;
     }
