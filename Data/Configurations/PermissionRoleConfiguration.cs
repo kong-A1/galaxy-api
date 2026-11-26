@@ -19,5 +19,12 @@ public class PermissionRoleConfiguration : IEntityTypeConfiguration<PermissionRo
         builder.HasOne<Permission>().WithMany()
             .HasForeignKey(x => x.PermissionId)
             .OnDelete(DeleteBehavior.Cascade);
+
+        // คำอธิบายตารางและคอลัมน์
+        builder.ToTable(t => t.HasComment("สิทธิ์ที่มอบให้บทบาท"));
+        builder.Property(x => x.RoleId)
+            .HasComment("บทบาทที่ได้รับสิทธิ์ (FK roles.id)");
+        builder.Property(x => x.PermissionId)
+            .HasComment("สิทธิ์ที่ถูกมอบให้บทบาท (FK permissions.id)");
     }
 }

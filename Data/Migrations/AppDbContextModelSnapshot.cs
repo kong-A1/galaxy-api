@@ -22,67 +22,79 @@ namespace galaxy_api.Data.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("galaxy_api.Models.AuditLog", b =>
+            modelBuilder.Entity("galaxy_api.Entities.AuditLog", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid")
                         .HasColumnName("id")
-                        .HasDefaultValueSql("gen_random_uuid()");
+                        .HasDefaultValueSql("gen_random_uuid()")
+                        .HasComment("รหัสบันทึก audit (UUID)");
 
                     b.Property<string>("Action")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)")
-                        .HasColumnName("action");
+                        .HasColumnName("action")
+                        .HasComment("ชื่อการกระทำ");
 
                     b.Property<string>("ActorType")
                         .IsRequired()
                         .HasMaxLength(20)
                         .HasColumnType("character varying(20)")
-                        .HasColumnName("actor_type");
+                        .HasColumnName("actor_type")
+                        .HasComment("ประเภทผู้กระทำ: user = ผู้ใช้ในระบบ, system = ระบบ, platform = ค่าจากแบบเดิม (รอทบทวน)");
 
                     b.Property<Guid?>("ActorUserId")
                         .HasColumnType("uuid")
-                        .HasColumnName("actor_user_id");
+                        .HasColumnName("actor_user_id")
+                        .HasComment("ผู้ใช้ที่ทำรายการ (FK users.id)");
 
                     b.Property<DateTimeOffset>("CreatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("created_at")
-                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP")
+                        .HasComment("เวลาที่เกิดเหตุการณ์ (UTC)");
 
                     b.Property<Guid?>("EntityId")
                         .HasColumnType("uuid")
-                        .HasColumnName("entity_id");
+                        .HasColumnName("entity_id")
+                        .HasComment("รหัสของข้อมูลที่ถูกกระทำ");
 
                     b.Property<string>("EntityType")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)")
-                        .HasColumnName("entity_type");
+                        .HasColumnName("entity_type")
+                        .HasComment("ประเภทข้อมูลที่ถูกกระทำ เช่น role, user, menu");
 
                     b.Property<string>("IpAddress")
                         .HasMaxLength(45)
                         .HasColumnType("character varying(45)")
-                        .HasColumnName("ip_address");
+                        .HasColumnName("ip_address")
+                        .HasComment("IP ของผู้กระทำ");
 
                     b.Property<string>("NewValues")
                         .HasColumnType("jsonb")
-                        .HasColumnName("new_values");
+                        .HasColumnName("new_values")
+                        .HasComment("ค่าหลังเปลี่ยน");
 
                     b.Property<string>("OldValues")
                         .HasColumnType("jsonb")
-                        .HasColumnName("old_values");
+                        .HasColumnName("old_values")
+                        .HasComment("ค่าก่อนเปลี่ยน");
 
                     b.Property<Guid?>("PlatformActorId")
                         .HasColumnType("uuid")
-                        .HasColumnName("platform_actor_id");
+                        .HasColumnName("platform_actor_id")
+                        .HasComment("คอลัมน์จากแบบเดิมที่มีฐานกลาง ไม่มี FK (รอทบทวน)");
 
                     b.Property<string>("UserAgent")
                         .HasMaxLength(255)
                         .HasColumnType("character varying(255)")
-                        .HasColumnName("user_agent");
+                        .HasColumnName("user_agent")
+                        .HasComment("User-Agent ของผู้กระทำ");
 
                     b.HasKey("Id")
                         .HasName("pk_audit_logs");
@@ -98,89 +110,106 @@ namespace galaxy_api.Data.Migrations
 
                     b.ToTable("audit_logs", null, t =>
                         {
+                            t.HasComment("ประวัติการกระทำในระบบ");
+
                             t.HasCheckConstraint("ck_audit_logs_actor_type", "actor_type IN ('user','system','platform')");
                         });
                 });
 
-            modelBuilder.Entity("galaxy_api.Models.MasterMenu", b =>
+            modelBuilder.Entity("galaxy_api.Entities.MasterMenu", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid")
                         .HasColumnName("id")
-                        .HasDefaultValueSql("gen_random_uuid()");
+                        .HasDefaultValueSql("gen_random_uuid()")
+                        .HasComment("รหัสของแถว (UUID)");
 
                     b.Property<string>("Code")
                         .IsRequired()
                         .HasMaxLength(20)
                         .HasColumnType("character varying(20)")
-                        .HasColumnName("code");
+                        .HasColumnName("code")
+                        .HasComment("รหัสเมนูสำหรับอ้างอิงข้ามระบบ ไม่ซ้ำ ไม่เป็นค่าว่าง");
 
                     b.Property<DateTimeOffset>("CreatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("created_at")
-                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP")
+                        .HasComment("เวลาที่สร้างแถว (เก็บเป็น UTC)");
 
                     b.Property<Guid?>("CreatedBy")
                         .HasColumnType("uuid")
-                        .HasColumnName("created_by");
+                        .HasColumnName("created_by")
+                        .HasComment("ผู้ใช้ที่สร้างแถวนี้ (ว่างได้สำหรับข้อมูลที่ระบบสร้าง)");
 
                     b.Property<DateTimeOffset?>("DeletedAt")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("deleted_at");
+                        .HasColumnName("deleted_at")
+                        .HasComment("เวลาที่ลบแบบ soft delete ว่าง = ยังใช้งานอยู่");
 
                     b.Property<Guid?>("DeletedBy")
                         .HasColumnType("uuid")
-                        .HasColumnName("deleted_by");
+                        .HasColumnName("deleted_by")
+                        .HasComment("ผู้ใช้ที่ลบแถวนี้ (soft delete)");
 
                     b.Property<string>("Icon")
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)")
-                        .HasColumnName("icon");
+                        .HasColumnName("icon")
+                        .HasComment("ชื่อไอคอนที่แสดงข้างเมนู");
 
                     b.Property<bool>("IsActive")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("boolean")
                         .HasDefaultValue(true)
-                        .HasColumnName("is_active");
+                        .HasColumnName("is_active")
+                        .HasComment("ซ่อน/แสดงเมนูโดยไม่ต้องลบ");
 
                     b.Property<string>("NameEn")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)")
-                        .HasColumnName("name_en");
+                        .HasColumnName("name_en")
+                        .HasComment("ชื่อเมนูภาษาอังกฤษ");
 
                     b.Property<string>("NameTh")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)")
-                        .HasColumnName("name_th");
+                        .HasColumnName("name_th")
+                        .HasComment("ชื่อเมนูภาษาไทย");
 
                     b.Property<Guid?>("ParentId")
                         .HasColumnType("uuid")
-                        .HasColumnName("parent_id");
+                        .HasColumnName("parent_id")
+                        .HasComment("เมนูแม่ (FK master_menus.id) NULL = เมนูระดับบนสุด");
 
                     b.Property<string>("Route")
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)")
-                        .HasColumnName("route");
+                        .HasColumnName("route")
+                        .HasComment("path ของหน้าจอที่เมนูนี้เปิด ว่างได้เมื่อเป็นเมนูกลุ่มที่ไม่มีหน้าของตัวเอง");
 
                     b.Property<int>("SortOrder")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer")
                         .HasDefaultValue(0)
-                        .HasColumnName("sort_order");
+                        .HasColumnName("sort_order")
+                        .HasComment("ลำดับการแสดงภายใต้เมนูแม่เดียวกัน (น้อยก่อน)");
 
                     b.Property<DateTimeOffset>("UpdatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("updated_at")
-                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP")
+                        .HasComment("เวลาที่แก้ไขล่าสุด (UTC)");
 
                     b.Property<Guid?>("UpdatedBy")
                         .HasColumnType("uuid")
-                        .HasColumnName("updated_by");
+                        .HasColumnName("updated_by")
+                        .HasComment("ผู้ใช้ที่แก้ไขแถวนี้ล่าสุด");
 
                     b.HasKey("Id")
                         .HasName("pk_master_menus");
@@ -204,19 +233,23 @@ namespace galaxy_api.Data.Migrations
 
                     b.ToTable("master_menus", null, t =>
                         {
+                            t.HasComment("เมนูของระบบ");
+
                             t.HasCheckConstraint("ck_master_menus_parent_not_self", "parent_id <> id");
                         });
                 });
 
-            modelBuilder.Entity("galaxy_api.Models.MenuPermission", b =>
+            modelBuilder.Entity("galaxy_api.Entities.MenuPermission", b =>
                 {
                     b.Property<Guid>("MenuId")
                         .HasColumnType("uuid")
-                        .HasColumnName("menu_id");
+                        .HasColumnName("menu_id")
+                        .HasComment("เมนูที่ถูกควบคุมสิทธิ์ (FK master_menus.id)");
 
                     b.Property<Guid>("PermissionId")
                         .HasColumnType("uuid")
-                        .HasColumnName("permission_id");
+                        .HasColumnName("permission_id")
+                        .HasComment("สิทธิ์ที่ต้องมีเพื่อเห็นเมนูนี้ (FK permissions.id)");
 
                     b.HasKey("MenuId", "PermissionId")
                         .HasName("pk_menu_permissions");
@@ -224,40 +257,49 @@ namespace galaxy_api.Data.Migrations
                     b.HasIndex("PermissionId")
                         .HasDatabaseName("ix_menu_permissions_permission_id");
 
-                    b.ToTable("menu_permissions", (string)null);
+                    b.ToTable("menu_permissions", null, t =>
+                        {
+                            t.HasComment("สิทธิ์ที่ใช้ควบคุมการเห็นเมนู");
+                        });
                 });
 
-            modelBuilder.Entity("galaxy_api.Models.PasswordResetToken", b =>
+            modelBuilder.Entity("galaxy_api.Entities.PasswordResetToken", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid")
                         .HasColumnName("id")
-                        .HasDefaultValueSql("gen_random_uuid()");
+                        .HasDefaultValueSql("gen_random_uuid()")
+                        .HasComment("รหัสคำขอรีเซ็ตรหัสผ่าน (UUID)");
 
                     b.Property<DateTimeOffset>("CreatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("created_at")
-                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP")
+                        .HasComment("เวลาที่สร้างคำขอ (UTC)");
 
                     b.Property<DateTimeOffset>("ExpiresAt")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("expires_at");
+                        .HasColumnName("expires_at")
+                        .HasComment("เวลาที่ลิงก์รีเซ็ตหมดอายุ (UTC)");
 
                     b.Property<string>("TokenHash")
                         .IsRequired()
                         .HasMaxLength(64)
                         .HasColumnType("character varying(64)")
-                        .HasColumnName("token_hash");
+                        .HasColumnName("token_hash")
+                        .HasComment("ค่า hash ของโทเคนที่ส่งทางอีเมล ห้ามเก็บโทเคนจริง");
 
                     b.Property<DateTimeOffset?>("UsedAt")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("used_at");
+                        .HasColumnName("used_at")
+                        .HasComment("เวลาที่ใช้โทเคนนี้แล้ว ว่าง = ยังไม่ถูกใช้");
 
                     b.Property<Guid>("UserId")
                         .HasColumnType("uuid")
-                        .HasColumnName("user_id");
+                        .HasColumnName("user_id")
+                        .HasComment("ผู้ใช้ที่ขอรีเซ็ตรหัสผ่าน (FK users.id)");
 
                     b.HasKey("Id")
                         .HasName("pk_password_reset_tokens");
@@ -269,57 +311,68 @@ namespace galaxy_api.Data.Migrations
                     b.HasIndex("UserId")
                         .HasDatabaseName("ix_password_reset_tokens_user_id");
 
-                    b.ToTable("password_reset_tokens", (string)null);
+                    b.ToTable("password_reset_tokens", null, t =>
+                        {
+                            t.HasComment("คำขอรีเซ็ตรหัสผ่าน (เก็บเฉพาะ hash ของโทเคน)");
+                        });
                 });
 
-            modelBuilder.Entity("galaxy_api.Models.Permission", b =>
+            modelBuilder.Entity("galaxy_api.Entities.Permission", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid")
                         .HasColumnName("id")
-                        .HasDefaultValueSql("gen_random_uuid()");
+                        .HasDefaultValueSql("gen_random_uuid()")
+                        .HasComment("รหัสสิทธิ์ (UUID)");
 
                     b.Property<string>("Code")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)")
-                        .HasColumnName("code");
+                        .HasColumnName("code")
+                        .HasComment("รหัสสิทธิ์รูปแบบ resource:action เช่น member:read ใช้ในโค้ดตรวจสิทธิ์ ไม่ซ้ำ");
 
                     b.Property<DateTimeOffset>("CreatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("created_at")
-                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP")
+                        .HasComment("เวลาที่สิทธิ์นี้ถูกซิงก์เข้าฐานข้อมูลครั้งแรก (UTC)");
 
                     b.Property<string>("Description")
                         .HasMaxLength(255)
                         .HasColumnType("character varying(255)")
-                        .HasColumnName("description");
+                        .HasColumnName("description")
+                        .HasComment("คำอธิบายว่าสิทธิ์นี้ทำอะไรได้บ้าง");
 
                     b.Property<bool>("IsActive")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("boolean")
                         .HasDefaultValue(true)
-                        .HasColumnName("is_active");
+                        .HasColumnName("is_active")
+                        .HasComment("ปิดสิทธิ์ชั่วคราวโดยไม่ต้องลบ FALSE = ไม่มีผลกับทุก role");
 
                     b.Property<string>("Module")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)")
-                        .HasColumnName("module");
+                        .HasColumnName("module")
+                        .HasComment("กลุ่มของสิทธิ์ ใช้จัดหมวดบนหน้าจอจัดการ role");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)")
-                        .HasColumnName("name");
+                        .HasColumnName("name")
+                        .HasComment("ชื่อสิทธิ์ที่แสดงบนหน้าจอจัดการ role");
 
                     b.Property<DateTimeOffset>("UpdatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("updated_at")
-                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP")
+                        .HasComment("เวลาที่แก้ไขล่าสุด (UTC)");
 
                     b.HasKey("Id")
                         .HasName("pk_permissions");
@@ -328,18 +381,23 @@ namespace galaxy_api.Data.Migrations
                         .IsUnique()
                         .HasDatabaseName("ix_permissions_code");
 
-                    b.ToTable("permissions", (string)null);
+                    b.ToTable("permissions", null, t =>
+                        {
+                            t.HasComment("รายการสิทธิ์ในระบบ");
+                        });
                 });
 
-            modelBuilder.Entity("galaxy_api.Models.PermissionRole", b =>
+            modelBuilder.Entity("galaxy_api.Entities.PermissionRole", b =>
                 {
                     b.Property<Guid>("RoleId")
                         .HasColumnType("uuid")
-                        .HasColumnName("role_id");
+                        .HasColumnName("role_id")
+                        .HasComment("บทบาทที่ได้รับสิทธิ์ (FK roles.id)");
 
                     b.Property<Guid>("PermissionId")
                         .HasColumnType("uuid")
-                        .HasColumnName("permission_id");
+                        .HasColumnName("permission_id")
+                        .HasComment("สิทธิ์ที่ถูกมอบให้บทบาท (FK permissions.id)");
 
                     b.HasKey("RoleId", "PermissionId")
                         .HasName("pk_permission_role");
@@ -347,54 +405,66 @@ namespace galaxy_api.Data.Migrations
                     b.HasIndex("PermissionId")
                         .HasDatabaseName("ix_permission_role_permission_id");
 
-                    b.ToTable("permission_role", (string)null);
+                    b.ToTable("permission_role", null, t =>
+                        {
+                            t.HasComment("สิทธิ์ที่มอบให้บทบาท");
+                        });
                 });
 
-            modelBuilder.Entity("galaxy_api.Models.RefreshToken", b =>
+            modelBuilder.Entity("galaxy_api.Entities.RefreshToken", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid")
                         .HasColumnName("id")
-                        .HasDefaultValueSql("gen_random_uuid()");
+                        .HasDefaultValueSql("gen_random_uuid()")
+                        .HasComment("รหัสโทเคน (UUID)");
 
                     b.Property<DateTimeOffset>("CreatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("created_at")
-                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP")
+                        .HasComment("เวลาที่ออกโทเคน (UTC)");
 
                     b.Property<string>("CreatedIp")
                         .HasMaxLength(45)
                         .HasColumnType("character varying(45)")
-                        .HasColumnName("created_ip");
+                        .HasColumnName("created_ip")
+                        .HasComment("IP ของผู้ที่ขอโทเคน");
 
                     b.Property<DateTimeOffset>("ExpiresAt")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("expires_at");
+                        .HasColumnName("expires_at")
+                        .HasComment("เวลาที่โทเคนหมดอายุ (UTC)");
 
                     b.Property<Guid>("FamilyId")
                         .HasColumnType("uuid")
-                        .HasColumnName("family_id");
+                        .HasColumnName("family_id")
+                        .HasComment("รหัสกลุ่มโทเคนที่หมุนเวียนต่อกันจากการล็อกอินครั้งเดียว ใช้ตรวจจับการใช้โทเคนซ้ำ");
 
                     b.Property<DateTimeOffset?>("RevokedAt")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("revoked_at");
+                        .HasColumnName("revoked_at")
+                        .HasComment("เวลาที่โทเคนถูกเพิกถอน ว่าง = ยังไม่ถูกเพิกถอน");
 
                     b.Property<string>("TokenHash")
                         .IsRequired()
                         .HasMaxLength(64)
                         .HasColumnType("character varying(64)")
-                        .HasColumnName("token_hash");
+                        .HasColumnName("token_hash")
+                        .HasComment("ค่า hash ของ refresh token เก็บเฉพาะ hash ห้ามเก็บโทเคนจริง");
 
                     b.Property<string>("UserAgent")
                         .HasMaxLength(255)
                         .HasColumnType("character varying(255)")
-                        .HasColumnName("user_agent");
+                        .HasColumnName("user_agent")
+                        .HasComment("User-Agent ของอุปกรณ์/เบราว์เซอร์ที่ขอโทเคน");
 
                     b.Property<Guid>("UserId")
                         .HasColumnType("uuid")
-                        .HasColumnName("user_id");
+                        .HasColumnName("user_id")
+                        .HasComment("ผู้ใช้เจ้าของโทเคน (FK users.id)");
 
                     b.HasKey("Id")
                         .HasName("pk_refresh_tokens");
@@ -412,74 +482,89 @@ namespace galaxy_api.Data.Migrations
                     b.HasIndex("UserId")
                         .HasDatabaseName("ix_refresh_tokens_user_id");
 
-                    b.ToTable("refresh_tokens", (string)null);
+                    b.ToTable("refresh_tokens", null, t =>
+                        {
+                            t.HasComment("refresh token สำหรับต่ออายุการล็อกอิน (เก็บเฉพาะ hash)");
+                        });
                 });
 
-            modelBuilder.Entity("galaxy_api.Models.Role", b =>
+            modelBuilder.Entity("galaxy_api.Entities.Role", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid")
                         .HasColumnName("id")
-                        .HasDefaultValueSql("gen_random_uuid()");
+                        .HasDefaultValueSql("gen_random_uuid()")
+                        .HasComment("รหัสของแถว (UUID)");
 
                     b.Property<string>("Code")
                         .IsRequired()
                         .HasMaxLength(20)
                         .HasColumnType("character varying(20)")
-                        .HasColumnName("code");
+                        .HasColumnName("code")
+                        .HasComment("รหัสบทบาทสำหรับอ้างอิงในโค้ด ไม่ซ้ำ (นับเฉพาะแถวที่ยังไม่ถูกลบ)");
 
                     b.Property<DateTimeOffset>("CreatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("created_at")
-                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP")
+                        .HasComment("เวลาที่สร้างแถว (เก็บเป็น UTC)");
 
                     b.Property<Guid?>("CreatedBy")
                         .HasColumnType("uuid")
-                        .HasColumnName("created_by");
+                        .HasColumnName("created_by")
+                        .HasComment("ผู้ใช้ที่สร้างแถวนี้ (ว่างได้สำหรับข้อมูลที่ระบบสร้าง)");
 
                     b.Property<DateTimeOffset?>("DeletedAt")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("deleted_at");
+                        .HasColumnName("deleted_at")
+                        .HasComment("เวลาที่ลบแบบ soft delete ว่าง = ยังใช้งานอยู่");
 
                     b.Property<Guid?>("DeletedBy")
                         .HasColumnType("uuid")
-                        .HasColumnName("deleted_by");
+                        .HasColumnName("deleted_by")
+                        .HasComment("ผู้ใช้ที่ลบแถวนี้ (soft delete)");
 
                     b.Property<bool>("IsActive")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("boolean")
                         .HasDefaultValue(true)
-                        .HasColumnName("is_active");
+                        .HasColumnName("is_active")
+                        .HasComment("เปิด/ปิดบทบาทชั่วคราว FALSE = ผู้ใช้ที่มีบทบาทนี้ไม่ได้รับสิทธิ์จากบทบาทนี้");
 
                     b.Property<bool>("IsSuperAdmin")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("boolean")
                         .HasDefaultValue(false)
-                        .HasColumnName("is_super_admin");
+                        .HasColumnName("is_super_admin")
+                        .HasComment("TRUE = ผู้ดูแลสูงสุด ผ่านการตรวจสิทธิ์ทุกอย่าง");
 
                     b.Property<bool>("IsSystem")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("boolean")
                         .HasDefaultValue(false)
-                        .HasColumnName("is_system");
+                        .HasColumnName("is_system")
+                        .HasComment("บทบาทที่ระบบสร้างให้ (seed) ห้ามแก้ไขหรือลบผ่านหน้าจอ");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)")
-                        .HasColumnName("name");
+                        .HasColumnName("name")
+                        .HasComment("ชื่อบทบาทที่แสดงบนหน้าจอ");
 
                     b.Property<DateTimeOffset>("UpdatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("updated_at")
-                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP")
+                        .HasComment("เวลาที่แก้ไขล่าสุด (UTC)");
 
                     b.Property<Guid?>("UpdatedBy")
                         .HasColumnType("uuid")
-                        .HasColumnName("updated_by");
+                        .HasColumnName("updated_by")
+                        .HasComment("ผู้ใช้ที่แก้ไขแถวนี้ล่าสุด");
 
                     b.HasKey("Id")
                         .HasName("pk_roles");
@@ -498,91 +583,110 @@ namespace galaxy_api.Data.Migrations
                     b.HasIndex("UpdatedBy")
                         .HasDatabaseName("ix_roles_updated_by");
 
-                    b.ToTable("roles", (string)null);
+                    b.ToTable("roles", null, t =>
+                        {
+                            t.HasComment("บทบาทของผู้ใช้");
+                        });
                 });
 
-            modelBuilder.Entity("galaxy_api.Models.User", b =>
+            modelBuilder.Entity("galaxy_api.Entities.User", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid")
                         .HasColumnName("id")
-                        .HasDefaultValueSql("gen_random_uuid()");
+                        .HasDefaultValueSql("gen_random_uuid()")
+                        .HasComment("รหัสของแถว (UUID)");
 
                     b.Property<DateTimeOffset>("CreatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("created_at")
-                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP")
+                        .HasComment("เวลาที่สร้างแถว (เก็บเป็น UTC)");
 
                     b.Property<Guid?>("CreatedBy")
                         .HasColumnType("uuid")
-                        .HasColumnName("created_by");
+                        .HasColumnName("created_by")
+                        .HasComment("ผู้ใช้ที่สร้างแถวนี้ (ว่างได้สำหรับข้อมูลที่ระบบสร้าง)");
 
                     b.Property<DateTimeOffset?>("DeletedAt")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("deleted_at");
+                        .HasColumnName("deleted_at")
+                        .HasComment("เวลาที่ลบแบบ soft delete ว่าง = ยังใช้งานอยู่");
 
                     b.Property<Guid?>("DeletedBy")
                         .HasColumnType("uuid")
-                        .HasColumnName("deleted_by");
+                        .HasColumnName("deleted_by")
+                        .HasComment("ผู้ใช้ที่ลบแถวนี้ (soft delete)");
 
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasMaxLength(255)
                         .HasColumnType("character varying(255)")
-                        .HasColumnName("email");
+                        .HasColumnName("email")
+                        .HasComment("อีเมลที่ใช้ล็อกอิน ไม่ซ้ำ (นับเฉพาะผู้ใช้ที่ยังไม่ถูกลบ ไม่แยกตัวพิมพ์เล็ก/ใหญ่)");
 
                     b.Property<int>("FailedLoginCount")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer")
                         .HasDefaultValue(0)
-                        .HasColumnName("failed_login_count");
+                        .HasColumnName("failed_login_count")
+                        .HasComment("จำนวนครั้งที่ใส่รหัสผ่านผิดติดต่อกัน ใช้ล็อกบัญชีเมื่อเกินกำหนด");
 
                     b.Property<bool>("IsActive")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("boolean")
                         .HasDefaultValue(true)
-                        .HasColumnName("is_active");
+                        .HasColumnName("is_active")
+                        .HasComment("เปิด/ปิดบัญชีชั่วคราว FALSE = ล็อกอินไม่ได้ (ต่างจากการลบ ซึ่งใช้ deleted_at)");
 
                     b.Property<DateTimeOffset?>("LastLoginAt")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("last_login_at");
+                        .HasColumnName("last_login_at")
+                        .HasComment("เวลาที่ล็อกอินสำเร็จล่าสุด (UTC)");
 
                     b.Property<DateTimeOffset?>("LockedUntil")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("locked_until");
+                        .HasColumnName("locked_until")
+                        .HasComment("เวลาที่บัญชีถูกล็อกจนถึง ว่าง = ไม่ถูกล็อก");
 
                     b.Property<bool>("MustChangePassword")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("boolean")
                         .HasDefaultValue(false)
-                        .HasColumnName("must_change_password");
+                        .HasColumnName("must_change_password")
+                        .HasComment("บังคับเปลี่ยนรหัสผ่านเมื่อล็อกอินครั้งถัดไป");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)")
-                        .HasColumnName("name");
+                        .HasColumnName("name")
+                        .HasComment("ชื่อ-นามสกุลของพนักงานที่แสดงในระบบ");
 
                     b.Property<DateTimeOffset?>("PasswordChangedAt")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("password_changed_at");
+                        .HasColumnName("password_changed_at")
+                        .HasComment("เวลาที่เปลี่ยนรหัสผ่านล่าสุด (UTC)");
 
                     b.Property<string>("PasswordHash")
                         .IsRequired()
                         .HasColumnType("text")
-                        .HasColumnName("password_hash");
+                        .HasColumnName("password_hash")
+                        .HasComment("รหัสผ่านที่ผ่านการ hash แล้ว (เช่น Argon2id/bcrypt) ห้ามเก็บรหัสผ่านจริง");
 
                     b.Property<DateTimeOffset>("UpdatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("updated_at")
-                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP")
+                        .HasComment("เวลาที่แก้ไขล่าสุด (UTC)");
 
                     b.Property<Guid?>("UpdatedBy")
                         .HasColumnType("uuid")
-                        .HasColumnName("updated_by");
+                        .HasColumnName("updated_by")
+                        .HasComment("ผู้ใช้ที่แก้ไขแถวนี้ล่าสุด");
 
                     b.HasKey("Id")
                         .HasName("pk_users");
@@ -598,31 +702,37 @@ namespace galaxy_api.Data.Migrations
 
                     b.ToTable("users", null, t =>
                         {
+                            t.HasComment("ผู้ใช้ที่ล็อกอินเข้าระบบ");
+
                             t.HasCheckConstraint("ck_users_deleted_by", "deleted_by IS NULL OR deleted_at IS NOT NULL");
 
                             t.HasCheckConstraint("ck_users_failed_login_count", "failed_login_count >= 0");
                         });
                 });
 
-            modelBuilder.Entity("galaxy_api.Models.UserRole", b =>
+            modelBuilder.Entity("galaxy_api.Entities.UserRole", b =>
                 {
                     b.Property<Guid>("UserId")
                         .HasColumnType("uuid")
-                        .HasColumnName("user_id");
+                        .HasColumnName("user_id")
+                        .HasComment("ผู้ใช้ที่ได้รับบทบาท (FK users.id)");
 
                     b.Property<Guid>("RoleId")
                         .HasColumnType("uuid")
-                        .HasColumnName("role_id");
+                        .HasColumnName("role_id")
+                        .HasComment("บทบาทที่ถูกกำหนดให้ผู้ใช้ (FK roles.id)");
 
                     b.Property<DateTimeOffset>("CreatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("created_at")
-                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP")
+                        .HasComment("เวลาที่กำหนดบทบาท (UTC)");
 
                     b.Property<Guid?>("CreatedBy")
                         .HasColumnType("uuid")
-                        .HasColumnName("created_by");
+                        .HasColumnName("created_by")
+                        .HasComment("ผู้ใช้ที่เป็นคนกำหนดบทบาทนี้ให้");
 
                     b.HasKey("UserId", "RoleId")
                         .HasName("pk_user_roles");
@@ -633,55 +743,58 @@ namespace galaxy_api.Data.Migrations
                     b.HasIndex("RoleId")
                         .HasDatabaseName("ix_user_roles_role_id");
 
-                    b.ToTable("user_roles", (string)null);
+                    b.ToTable("user_roles", null, t =>
+                        {
+                            t.HasComment("บทบาทที่กำหนดให้ผู้ใช้");
+                        });
                 });
 
-            modelBuilder.Entity("galaxy_api.Models.AuditLog", b =>
+            modelBuilder.Entity("galaxy_api.Entities.AuditLog", b =>
                 {
-                    b.HasOne("galaxy_api.Models.User", null)
+                    b.HasOne("galaxy_api.Entities.User", null)
                         .WithMany()
                         .HasForeignKey("ActorUserId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .HasConstraintName("fk_audit_logs_users_actor_user_id");
                 });
 
-            modelBuilder.Entity("galaxy_api.Models.MasterMenu", b =>
+            modelBuilder.Entity("galaxy_api.Entities.MasterMenu", b =>
                 {
-                    b.HasOne("galaxy_api.Models.User", null)
+                    b.HasOne("galaxy_api.Entities.User", null)
                         .WithMany()
                         .HasForeignKey("CreatedBy")
                         .OnDelete(DeleteBehavior.Restrict)
                         .HasConstraintName("fk_master_menus_users_created_by");
 
-                    b.HasOne("galaxy_api.Models.User", null)
+                    b.HasOne("galaxy_api.Entities.User", null)
                         .WithMany()
                         .HasForeignKey("DeletedBy")
                         .OnDelete(DeleteBehavior.Restrict)
                         .HasConstraintName("fk_master_menus_users_deleted_by");
 
-                    b.HasOne("galaxy_api.Models.MasterMenu", null)
+                    b.HasOne("galaxy_api.Entities.MasterMenu", null)
                         .WithMany()
                         .HasForeignKey("ParentId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .HasConstraintName("fk_master_menus_master_menus_parent_id");
 
-                    b.HasOne("galaxy_api.Models.User", null)
+                    b.HasOne("galaxy_api.Entities.User", null)
                         .WithMany()
                         .HasForeignKey("UpdatedBy")
                         .OnDelete(DeleteBehavior.Restrict)
                         .HasConstraintName("fk_master_menus_users_updated_by");
                 });
 
-            modelBuilder.Entity("galaxy_api.Models.MenuPermission", b =>
+            modelBuilder.Entity("galaxy_api.Entities.MenuPermission", b =>
                 {
-                    b.HasOne("galaxy_api.Models.MasterMenu", null)
+                    b.HasOne("galaxy_api.Entities.MasterMenu", null)
                         .WithMany()
                         .HasForeignKey("MenuId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("fk_menu_permissions_master_menus_menu_id");
 
-                    b.HasOne("galaxy_api.Models.Permission", null)
+                    b.HasOne("galaxy_api.Entities.Permission", null)
                         .WithMany()
                         .HasForeignKey("PermissionId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -689,9 +802,9 @@ namespace galaxy_api.Data.Migrations
                         .HasConstraintName("fk_menu_permissions_permissions_permission_id");
                 });
 
-            modelBuilder.Entity("galaxy_api.Models.PasswordResetToken", b =>
+            modelBuilder.Entity("galaxy_api.Entities.PasswordResetToken", b =>
                 {
-                    b.HasOne("galaxy_api.Models.User", null)
+                    b.HasOne("galaxy_api.Entities.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -699,16 +812,16 @@ namespace galaxy_api.Data.Migrations
                         .HasConstraintName("fk_password_reset_tokens_users_user_id");
                 });
 
-            modelBuilder.Entity("galaxy_api.Models.PermissionRole", b =>
+            modelBuilder.Entity("galaxy_api.Entities.PermissionRole", b =>
                 {
-                    b.HasOne("galaxy_api.Models.Permission", null)
+                    b.HasOne("galaxy_api.Entities.Permission", null)
                         .WithMany()
                         .HasForeignKey("PermissionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("fk_permission_role_permissions_permission_id");
 
-                    b.HasOne("galaxy_api.Models.Role", null)
+                    b.HasOne("galaxy_api.Entities.Role", null)
                         .WithMany()
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -716,9 +829,9 @@ namespace galaxy_api.Data.Migrations
                         .HasConstraintName("fk_permission_role_roles_role_id");
                 });
 
-            modelBuilder.Entity("galaxy_api.Models.RefreshToken", b =>
+            modelBuilder.Entity("galaxy_api.Entities.RefreshToken", b =>
                 {
-                    b.HasOne("galaxy_api.Models.User", null)
+                    b.HasOne("galaxy_api.Entities.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -726,64 +839,64 @@ namespace galaxy_api.Data.Migrations
                         .HasConstraintName("fk_refresh_tokens_users_user_id");
                 });
 
-            modelBuilder.Entity("galaxy_api.Models.Role", b =>
+            modelBuilder.Entity("galaxy_api.Entities.Role", b =>
                 {
-                    b.HasOne("galaxy_api.Models.User", null)
+                    b.HasOne("galaxy_api.Entities.User", null)
                         .WithMany()
                         .HasForeignKey("CreatedBy")
                         .OnDelete(DeleteBehavior.Restrict)
                         .HasConstraintName("fk_roles_users_created_by");
 
-                    b.HasOne("galaxy_api.Models.User", null)
+                    b.HasOne("galaxy_api.Entities.User", null)
                         .WithMany()
                         .HasForeignKey("DeletedBy")
                         .OnDelete(DeleteBehavior.Restrict)
                         .HasConstraintName("fk_roles_users_deleted_by");
 
-                    b.HasOne("galaxy_api.Models.User", null)
+                    b.HasOne("galaxy_api.Entities.User", null)
                         .WithMany()
                         .HasForeignKey("UpdatedBy")
                         .OnDelete(DeleteBehavior.Restrict)
                         .HasConstraintName("fk_roles_users_updated_by");
                 });
 
-            modelBuilder.Entity("galaxy_api.Models.User", b =>
+            modelBuilder.Entity("galaxy_api.Entities.User", b =>
                 {
-                    b.HasOne("galaxy_api.Models.User", null)
+                    b.HasOne("galaxy_api.Entities.User", null)
                         .WithMany()
                         .HasForeignKey("CreatedBy")
                         .OnDelete(DeleteBehavior.Restrict)
                         .HasConstraintName("fk_users_users_created_by");
 
-                    b.HasOne("galaxy_api.Models.User", null)
+                    b.HasOne("galaxy_api.Entities.User", null)
                         .WithMany()
                         .HasForeignKey("DeletedBy")
                         .OnDelete(DeleteBehavior.Restrict)
                         .HasConstraintName("fk_users_users_deleted_by");
 
-                    b.HasOne("galaxy_api.Models.User", null)
+                    b.HasOne("galaxy_api.Entities.User", null)
                         .WithMany()
                         .HasForeignKey("UpdatedBy")
                         .OnDelete(DeleteBehavior.Restrict)
                         .HasConstraintName("fk_users_users_updated_by");
                 });
 
-            modelBuilder.Entity("galaxy_api.Models.UserRole", b =>
+            modelBuilder.Entity("galaxy_api.Entities.UserRole", b =>
                 {
-                    b.HasOne("galaxy_api.Models.User", null)
+                    b.HasOne("galaxy_api.Entities.User", null)
                         .WithMany()
                         .HasForeignKey("CreatedBy")
                         .OnDelete(DeleteBehavior.Restrict)
                         .HasConstraintName("fk_user_roles_users_created_by");
 
-                    b.HasOne("galaxy_api.Models.Role", null)
+                    b.HasOne("galaxy_api.Entities.Role", null)
                         .WithMany()
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
                         .HasConstraintName("fk_user_roles_roles_role_id");
 
-                    b.HasOne("galaxy_api.Models.User", null)
+                    b.HasOne("galaxy_api.Entities.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)

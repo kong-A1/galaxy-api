@@ -25,5 +25,26 @@ public class RefreshTokenConfiguration : IEntityTypeConfiguration<RefreshToken>
         builder.HasOne<User>().WithMany()
             .HasForeignKey(x => x.UserId)
             .OnDelete(DeleteBehavior.Cascade);
+
+        // คำอธิบายตารางและคอลัมน์
+        builder.ToTable(t => t.HasComment("refresh token สำหรับต่ออายุการล็อกอิน (เก็บเฉพาะ hash)"));
+        builder.Property(x => x.Id)
+            .HasComment("รหัสโทเคน (UUID)");
+        builder.Property(x => x.UserId)
+            .HasComment("ผู้ใช้เจ้าของโทเคน (FK users.id)");
+        builder.Property(x => x.TokenHash)
+            .HasComment("ค่า hash ของ refresh token เก็บเฉพาะ hash ห้ามเก็บโทเคนจริง");
+        builder.Property(x => x.FamilyId)
+            .HasComment("รหัสกลุ่มโทเคนที่หมุนเวียนต่อกันจากการล็อกอินครั้งเดียว ใช้ตรวจจับการใช้โทเคนซ้ำ");
+        builder.Property(x => x.ExpiresAt)
+            .HasComment("เวลาที่โทเคนหมดอายุ (UTC)");
+        builder.Property(x => x.RevokedAt)
+            .HasComment("เวลาที่โทเคนถูกเพิกถอน ว่าง = ยังไม่ถูกเพิกถอน");
+        builder.Property(x => x.CreatedAt)
+            .HasComment("เวลาที่ออกโทเคน (UTC)");
+        builder.Property(x => x.CreatedIp)
+            .HasComment("IP ของผู้ที่ขอโทเคน");
+        builder.Property(x => x.UserAgent)
+            .HasComment("User-Agent ของอุปกรณ์/เบราว์เซอร์ที่ขอโทเคน");
     }
 }
