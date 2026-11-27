@@ -1,15 +1,14 @@
 # galaxy-api progress
 
-Last updated: 2026-11-26
+Last updated: 2026-11-27
 
 Branch and pull request status below is as of this date. Check git and GitHub again.
 
 ## Current status
 
-- PRs #1–#6 are merged.
-- Branch `feat/create-role` holds batch role creation and database column comments (the user chose not to split them). A pull request into `main` was opened from it; check its state on GitHub.
-- Batch role creation has been verified against `galaxy_dev` (commit `b0bfb02`).
-- **Next task:** after that pull request is merged, create a new branch from `main` and teach getting one role, updating and deleting.
+- PRs #1–#7 are merged.
+- Branch `feat/role-detail` adds `GET /roles/{id}`. A pull request into `main` was opened from it; check its state on GitHub.
+- **Next task:** after that pull request is merged, split role and permission names into Thai and English (see the decision below), then teach updating and deleting a role.
 
 ## Decisions (current)
 
@@ -21,6 +20,10 @@ Branch and pull request status below is as of this date. Check git and GitHub ag
 - Structure is Controller + Service + DTO, following the conventions in `CLAUDE.md`.
 - The `src/` and `tests/` layout is **postponed until testing starts**. It must be set up before creating a test project, because the `.csproj` is at the repo root.
 - **Route style (all topics):** URLs use nouns and the HTTP method states the action: `GET /roles`, `POST /roles`, later `GET`/`PUT`/`DELETE /roles/{id}`. No `list` or `create` words in URLs. `POST /roles` takes a list (`{ "roles": [...] }`); to create one role, send one item.
+- Single items are looked up by `id` (`/roles/{id}`), not by `code`. The user considered `code` and chose `id` because the URL stays stable and codes can be reused after a soft delete. Neither replaces permission checks.
+- **Names in two languages (decided, not built yet):** `roles` and `permissions` get `name_th` (required) and `name_en` (optional). The API fields become `nameTh` and `nameEn`.
+  - Use **two migrations**: first only rename `Name` to `NameTh` without changing comments (gives `RENAME COLUMN`), then add `NameEn` and update comments. Doing it in one step made EF generate `DROP COLUMN name`, which loses existing data. This was checked by reviewing the SQL on a scratch copy, not by running it on a database.
+  - `master_menus` already has both columns, with `name_en` currently required. Whether it should become optional has not been decided.
 - Batch creation is all or nothing: 1–50 roles per request, no repeated codes within a request, and a code that already exists returns `409` listing the duplicates.
 - The create request accepts only `code` and `name`. `isActive` and `isSuperAdmin` were removed for now ("option A"). Do not let callers set `is_super_admin` or `is_system`.
 - Role codes accept only `a-z`, `0-9` and `_` (enforced by the API, not by the database). The design spreadsheet still shows an uppercase example (`ADMIN`).
@@ -38,13 +41,15 @@ Branch and pull request status below is as of this date. Check git and GitHub ag
 - Structure refactor to match the conventions
 - List roles, `GET /roles` (merged in PR #5)
 - Batch role creation, `POST /roles`
+- Get one role, `GET /roles/{id}`
 - `AddColumnComments` migration: comments on all 10 tables and 86 columns, applied to `galaxy_dev`
 
 ## Tested / not tested
 
 - Tested against `galaxy_dev` inside a rolled-back transaction: role soft delete, timestamp updates, a tracked `permission_role` row is not deleted, and a duplicate email that differs only in letter case is rejected.
 - Verified against `galaxy_dev` over HTTP: creating two roles returns `201` with database-generated ids; `isSuperAdmin: true` in the request is ignored; repeated codes in one request return `400`; one new plus one existing code returns `409` and the new one is not saved; the list returns the created roles.
-- The test roles `marketing` and `support` remain in `galaxy_dev`.
+- The test roles `marketing` and `support` remain in `galaxy_dev`. On 2026-11-27 both showed `isActive: false` although they were created as `true`; the API has no code that changes it, and the cause has not been confirmed.
+- `GET /roles/{id}` was verified against `galaxy_dev`: both existing ids return `200`, an unknown id returns `404`, and a non-GUID value returns `404`. A soft-deleted role has not been tested.
 - Not verified against a real database: other validation cases (they were tested only with a simulated database), list ordering with more varied data, and hiding soft-deleted roles through the HTTP endpoint.
 - The comment migration SQL was checked: only `COMMENT ON` statements plus migration history, covering every column. The comments were not viewed in a database client afterwards.
 - Not tested: deleting a user that has related data against a real database, and `*_by` values with a real user.
@@ -52,18 +57,20 @@ Branch and pull request status below is as of this date. Check git and GitHub ag
 
 ## Remaining work (proposed order)
 
-1. Get one role, update, delete (a role that still has users cannot be deleted, and an `is_system` role cannot be edited or deleted; both must be checked in code). The create response `Location` header currently points to `/roles`.
-2. Error handling (`IExceptionHandler` + `ProblemDetails`)
-3. Set up the test layout and start writing tests (use real PostgreSQL, not the EF in-memory provider)
-4. Seed data: system user, permissions, roles
-5. Authentication (JWT access token + refresh token stored as a hash) and permission checks, then remove the Development-only condition around `MapControllers()`
-6. Per-customer deployment steps (config, migrations, CI/CD)
-7. Later: other CRUD, background jobs, integrations, point and tier engine, data migration and cutover
+1. Split role and permission names into Thai and English.
+2. Update and delete a role (a role that still has users cannot be deleted, and an `is_system` role cannot be edited or deleted; both must be checked in code). The create response `Location` header currently points to `/roles`.
+3. Error handling (`IExceptionHandler` + `ProblemDetails`)
+4. Set up the test layout and start writing tests (use real PostgreSQL, not the EF in-memory provider)
+5. Seed data: system user, permissions, roles
+6. Authentication (JWT access token + refresh token stored as a hash) and permission checks, then remove the Development-only condition around `MapControllers()`
+7. Per-customer deployment steps (config, migrations, CI/CD)
+8. Later: other CRUD, background jobs, integrations, point and tier engine, data migration and cutover
 
 **Waiting for the user to confirm:** a note from an earlier session (October 2026) gives the order Database → Auth → User/Role/Permission → connect CMS → Test/CI/CD → Deploy → LINE. That **puts Auth before the Role API**, unlike the list above, which starts with the Role API. Which one to follow has not been discussed.
 
 ## Open items
 
+- The design spreadsheet does not show the two-language name columns yet.
 - `galaxy-api.http` still calls the removed `/weatherforecast` endpoint.
 - Should `master_menus.route` be unique?
 - Index on `users.is_active`
