@@ -7,8 +7,9 @@ Branch and pull request status below is as of this date. Check git and GitHub ag
 ## Current status
 
 - PRs #1–#6 are merged.
-- Branch `feat/create-role` holds batch role creation and database column comments in one commit (the user chose not to split it). Not pushed when this was written.
-- **Next task:** test batch role creation against a real database (see below).
+- Branch `feat/create-role` holds batch role creation and database column comments (the user chose not to split them). A pull request into `main` was opened from it; check its state on GitHub.
+- Batch role creation has been verified against `galaxy_dev` (commit `b0bfb02`).
+- **Next task:** after that pull request is merged, create a new branch from `main` and teach getting one role, updating and deleting.
 
 ## Decisions (current)
 
@@ -19,7 +20,7 @@ Branch and pull request status below is as of this date. Check git and GitHub ag
   - The Control DB idea and using `tenant_id` in the JWT to choose a database are **cancelled**.
 - Structure is Controller + Service + DTO, following the conventions in `CLAUDE.md`.
 - The `src/` and `tests/` layout is **postponed until testing starts**. It must be set up before creating a test project, because the `.csproj` is at the repo root.
-- Role API routes are currently `GET /roles/list` and `POST /roles/create` (batch only; to create one role, send a list with one item). This differs from the REST style proposed earlier (`GET /roles`, `POST /roles/batch`), and the user has not confirmed which style to keep.
+- **Route style (all topics):** URLs use nouns and the HTTP method states the action: `GET /roles`, `POST /roles`, later `GET`/`PUT`/`DELETE /roles/{id}`. No `list` or `create` words in URLs. `POST /roles` takes a list (`{ "roles": [...] }`); to create one role, send one item.
 - Batch creation is all or nothing: 1–50 roles per request, no repeated codes within a request, and a code that already exists returns `409` listing the duplicates.
 - The create request accepts only `code` and `name`. `isActive` and `isSuperAdmin` were removed for now ("option A"). Do not let callers set `is_super_admin` or `is_system`.
 - Role codes accept only `a-z`, `0-9` and `_` (enforced by the API, not by the database). The design spreadsheet still shows an uppercase example (`ADMIN`).
@@ -35,30 +36,29 @@ Branch and pull request status below is as of this date. Check git and GitHub ag
 - 10 database tables: `users`, `roles`, `permissions`, `user_roles`, `permission_role`, `master_menus`, `menu_permissions`, `refresh_tokens`, `password_reset_tokens`, `audit_logs` (created by the first 5 migrations; all migrations are applied to `galaxy_dev`)
 - `AuditInterceptor` (timestamps, `*_by`, soft delete)
 - Structure refactor to match the conventions
-- List roles (merged in PR #5 as `GET /roles`, now `GET /roles/list`)
-- Batch role creation, `POST /roles/create`
+- List roles, `GET /roles` (merged in PR #5)
+- Batch role creation, `POST /roles`
 - `AddColumnComments` migration: comments on all 10 tables and 86 columns, applied to `galaxy_dev`
 
 ## Tested / not tested
 
 - Tested against `galaxy_dev` inside a rolled-back transaction: role soft delete, timestamp updates, a tracked `permission_role` row is not deleted, and a duplicate email that differs only in letter case is rejected.
-- The list endpoint has only returned an empty list against the real database.
-- Batch creation was tested on a scratch copy with a simulated database (201, 400 and 409 cases). That ran before the last edits to the request class and routes. **Not confirmed against a real database:** a successful insert, the 409 case, and that nothing is saved when one item fails.
+- Verified against `galaxy_dev` over HTTP: creating two roles returns `201` with database-generated ids; `isSuperAdmin: true` in the request is ignored; repeated codes in one request return `400`; one new plus one existing code returns `409` and the new one is not saved; the list returns the created roles.
+- The test roles `marketing` and `support` remain in `galaxy_dev`.
+- Not verified against a real database: other validation cases (they were tested only with a simulated database), list ordering with more varied data, and hiding soft-deleted roles through the HTTP endpoint.
 - The comment migration SQL was checked: only `COMMENT ON` statements plus migration history, covering every column. The comments were not viewed in a database client afterwards.
 - Not tested: deleting a user that has related data against a real database, and `*_by` values with a real user.
 - There are no automated tests yet.
 
 ## Remaining work (proposed order)
 
-1. Test batch creation against `galaxy_dev`: create two roles; repeated codes in one request (`400`); one new plus one existing code (`409`); then confirm the new one was not saved.
-2. Decide the route style and apply it to all role routes.
-3. Get one role, update, delete (a role that still has users cannot be deleted, and an `is_system` role cannot be edited or deleted; both must be checked in code). The create response `Location` header currently points to `/roles`.
-4. Error handling (`IExceptionHandler` + `ProblemDetails`)
-5. Set up the test layout and start writing tests (use real PostgreSQL, not the EF in-memory provider)
-6. Seed data: system user, permissions, roles
-7. Authentication (JWT access token + refresh token stored as a hash) and permission checks, then remove the Development-only condition around `MapControllers()`
-8. Per-customer deployment steps (config, migrations, CI/CD)
-9. Later: other CRUD, background jobs, integrations, point and tier engine, data migration and cutover
+1. Get one role, update, delete (a role that still has users cannot be deleted, and an `is_system` role cannot be edited or deleted; both must be checked in code). The create response `Location` header currently points to `/roles`.
+2. Error handling (`IExceptionHandler` + `ProblemDetails`)
+3. Set up the test layout and start writing tests (use real PostgreSQL, not the EF in-memory provider)
+4. Seed data: system user, permissions, roles
+5. Authentication (JWT access token + refresh token stored as a hash) and permission checks, then remove the Development-only condition around `MapControllers()`
+6. Per-customer deployment steps (config, migrations, CI/CD)
+7. Later: other CRUD, background jobs, integrations, point and tier engine, data migration and cutover
 
 **Waiting for the user to confirm:** a note from an earlier session (October 2026) gives the order Database → Auth → User/Role/Permission → connect CMS → Test/CI/CD → Deploy → LINE. That **puts Auth before the Role API**, unlike the list above, which starts with the Role API. Which one to follow has not been discussed.
 

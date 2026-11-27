@@ -8,14 +8,14 @@ namespace galaxy_api.Controllers;
 [Route("roles")]
 public class RolesController(IRoleService roleService) : ControllerBase
 {
-    [HttpGet("list")]
+    [HttpGet]
     public async Task<ActionResult<List<RoleResponse>>> GetRoles(CancellationToken ct)
     {
         var roles = await roleService.GetRolesAsync(ct);
         return Ok(roles);
     }
 
-    [HttpPost("create")]
+    [HttpPost]
     public async Task<ActionResult<List<RoleResponse>>> CreateRoles(CreateRolesRequest request, CancellationToken ct)
     {
         var result = await roleService.CreateRolesAsync(request, ct);
