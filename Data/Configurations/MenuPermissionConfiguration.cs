@@ -20,5 +20,12 @@ public class MenuPermissionConfiguration : IEntityTypeConfiguration<MenuPermissi
             .OnDelete(DeleteBehavior.Cascade);
 
         builder.HasIndex(x => x.PermissionId);
+
+        // คำอธิบายตารางและคอลัมน์
+        builder.ToTable(t => t.HasComment("สิทธิ์ที่ใช้ควบคุมการเห็นเมนู"));
+        builder.Property(x => x.MenuId)
+            .HasComment("เมนูที่ถูกควบคุมสิทธิ์ (FK master_menus.id)");
+        builder.Property(x => x.PermissionId)
+            .HasComment("สิทธิ์ที่ต้องมีเพื่อเห็นเมนูนี้ (FK permissions.id)");
     }
 }

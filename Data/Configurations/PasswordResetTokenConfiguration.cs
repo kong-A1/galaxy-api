@@ -22,5 +22,19 @@ public class PasswordResetTokenConfiguration : IEntityTypeConfiguration<Password
             .HasForeignKey(x => x.UserId)
             .OnDelete(DeleteBehavior.Cascade);
 
+        // คำอธิบายตารางและคอลัมน์
+        builder.ToTable(t => t.HasComment("คำขอรีเซ็ตรหัสผ่าน (เก็บเฉพาะ hash ของโทเคน)"));
+        builder.Property(x => x.Id)
+            .HasComment("รหัสคำขอรีเซ็ตรหัสผ่าน (UUID)");
+        builder.Property(x => x.UserId)
+            .HasComment("ผู้ใช้ที่ขอรีเซ็ตรหัสผ่าน (FK users.id)");
+        builder.Property(x => x.TokenHash)
+            .HasComment("ค่า hash ของโทเคนที่ส่งทางอีเมล ห้ามเก็บโทเคนจริง");
+        builder.Property(x => x.ExpiresAt)
+            .HasComment("เวลาที่ลิงก์รีเซ็ตหมดอายุ (UTC)");
+        builder.Property(x => x.UsedAt)
+            .HasComment("เวลาที่ใช้โทเคนนี้แล้ว ว่าง = ยังไม่ถูกใช้");
+        builder.Property(x => x.CreatedAt)
+            .HasComment("เวลาที่สร้างคำขอ (UTC)");
     }
 }
