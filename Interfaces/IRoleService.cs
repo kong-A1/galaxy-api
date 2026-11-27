@@ -8,4 +8,5 @@ public interface IRoleService
 {
     Task<List<RoleResponse>> GetRolesAsync(CancellationToken ct);
     Task<CreateRolesResult> CreateRolesAsync(CreateRolesRequest request, CancellationToken ct);
+    Task<RoleResponse?> GetRoleByIdAsync(Guid id, CancellationToken ct);
 }

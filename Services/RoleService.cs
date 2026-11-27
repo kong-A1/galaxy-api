@@ -59,4 +59,19 @@ public class RoleService(AppDbContext db) : IRoleService
 
         return new CreateRolesResult(created, []);
     }
+
+    public async Task<RoleResponse?> GetRoleByIdAsync(Guid id, CancellationToken ct)
+    {
+        return await db.Roles
+            .Where(x => x.Id == id)
+            .Select(x => new RoleResponse(
+                x.Id,
+                x.Code,
+                x.Name,
+                x.IsActive,
+                x.IsSuperAdmin,
+                x.IsSystem
+            ))
+            .SingleOrDefaultAsync(ct);
+    }
 }

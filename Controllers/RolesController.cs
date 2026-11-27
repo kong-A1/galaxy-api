@@ -30,4 +30,19 @@ public class RolesController(IRoleService roleService) : ControllerBase
 
         return Created("/roles", result.Created);
     }
+
+    [HttpGet("{id:guid}")]
+    public async Task<ActionResult<RoleResponse>> GetRoleById(Guid id, CancellationToken ct)
+    {
+        var role = await roleService.GetRoleByIdAsync(id, ct);
+
+        if (role is null)
+        {
+            return Problem(
+                statusCode: StatusCodes.Status404NotFound,
+                title: "Role not found");
+        }
+
+        return Ok(role);
+    }
 }
